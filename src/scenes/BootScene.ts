@@ -1,0 +1,149 @@
+import SoundManager from "../components/SoundManager";
+import store from "../store";
+
+export class BootScene extends Phaser.Scene {
+  private loadingBar: Phaser.GameObjects.Graphics;
+  private progressBar: Phaser.GameObjects.Graphics;
+  playerName: string;
+  texts: Record<string, Record<string, string>> = {};
+  constructor() {
+    super({
+      key: 'Boot',
+    });
+  }
+  async initSDK(): Promise<any> {
+    return (window as any).YaGames
+      .init()
+      .then((ysdk: any) => {
+        (window as any).ysdk = ysdk;
+
+       // Получение языка через SDK
+        store.lang = ysdk.environment.i18n.lang;;
+        console.log('Язык из SDK:', store.lang);
+
+        return ysdk
+      })
+  }
+
+  async preload(): Promise<void> {
+    this.createLoadingbar();
+    this.load.json("texts", "assets/texts.json");
+
+    window.addEventListener("contextmenu", (event) => event.preventDefault());
+
+
+    // pass value to change the loading bar fill
+    this.load.on(
+      'progress',
+      function (value: number) {
+        this.progressBar.clear();
+        this.progressBar.fillStyle(0xfff6d3, 1);
+        this.progressBar.fillRect(
+          this.cameras.main.width / 4,
+          this.cameras.main.height / 2 - 16,
+          (this.cameras.main.width / 2) * value,
+          16
+        );
+      },
+      this
+    );
+
+    // delete bar graphics, when loading complete
+    this.load.on(
+      'complete',
+      function () {
+        this.progressBar.destroy();
+        this.loadingBar.destroy();
+      },
+      this
+    );
+    this.load.pack('preload', './assets/pack.json', 'preload');
+
+    const YaSdk = await this.initSDK();
+    (window as any).ysdk = YaSdk;
+    (window as any).player = await (window as any).ysdk.getPlayer();
+    console.log((window as any).player);
+
+    store.avatar = (window as any).player.getPhoto("large");
+
+    this.load.image("user", store.avatar);
+    this.load.once("complete", () => {
+      store.avatarKey = "user"; // Сохраняем ключ загруженного изображения
+      //this.createProfilePlayer();
+    });
+    this.load.start();
+
+
+    console.log((window as any).player);
+
+    store.id = await (window as any).player.getUniqueID().replace(/\//g, "0");
+    console.log(store.id);
+
+    this.playerName = await (window as any).player.getName();
+    store.playerName = this.playerName;
+
+    const playerNameText = this.texts[store.lang]?.playerNameText || this.texts["en"]?.playerNameText;
+
+    if ((window as any).player.getMode() === 'lite') {
+      store.playerName = playerNameText
+    } else {
+      store.isAuth = true;
+    }
+    try {
+      var lb: any;
+      await (window as any).ysdk.getLeaderboards().then((_lb: any) => lb = _lb);
+    } catch (e) {
+      console.log('лидерборд не инициализирован', e);
+    }
+
+    if (store.isAuth) {
+      try {
+        await (window as any).ysdk.getLeaderboards().then(
+          (lb: any) => lb.getLeaderboardPlayerEntry('mainLeaderboard')
+          // .then((res: any) => store.playerData = res)
+        )
+      } catch (e) {
+        console.log('запрос LeaderboardPlayerEntry', e);
+        await (window as any).ysdk.getLeaderboards().then(
+          (lb: any) => lb.setLeaderboardScore('mainLeaderboard', 1100));
+        this.scene.start("Boot");
+      }
+    }
+
+    (window as any).ysdk.adv.showBannerAdv();
+  }
+
+  create(): void {
+
+    this.texts = this.cache.json.get("texts");
+
+    if (!store.soundTrack) {
+      new SoundManager(this);
+      store.soundTrack = true;
+    }
+    localStorage.setItem('isSoundEnable', 'true');
+    this.game.sound.resumeAll();
+    (window as any).ysdk.features.GameplayAPI.stop();
+    if (store.isGameOnline) {
+      //console.log(101)
+      this.scene.start('Game');
+    } else {
+      this.scene.start('Start');
+      //console.log(102)
+
+    }
+  }
+
+  private createLoadingbar(): void {
+    this.loadingBar = this.add.graphics();
+    this.loadingBar.fillStyle(0x5dae47, 1);
+    this.loadingBar.fillRect(
+      this.cameras.main.width / 4 - 2,
+      this.cameras.main.height / 2 - 18,
+      this.cameras.main.width / 2 + 4,
+      20
+    );
+    this.progressBar = this.add.graphics();
+  }
+
+}

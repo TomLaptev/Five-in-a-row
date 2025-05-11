@@ -1,0 +1,281 @@
+{
+	"preload": {
+		"files": [
+			{
+				"type": "image",
+				"key": "avatar",
+				"url": "./assets/images/avatar.png"
+			},
+			{
+				"type": "image",
+				"key": "background_v",
+				"url": "./assets/images/background_v.jpg"
+			},
+			{
+				"type": "image",
+				"key": "background_h",
+				"url": "./assets/images/background_h.jpg"
+			},
+			{
+				"type": "image",
+				"key": "buttonSound",
+				"url": "./assets/images/buttonSound.png"
+			},
+			{
+				"type": "image",
+				"key": "buttonWinners",
+				"url": "./assets/images/buttonWinners.png"
+			},
+			{
+				"type": "image",
+				"key": "buttonPlayer",
+				"url": "./assets/images/buttonPlayer.png"
+			},
+			{
+				"type": "image",
+				"key": "buttonFrame",
+				"url": "./assets/images/buttonFrame.png"
+			},
+			{
+				"type": "image",
+				"key": "buttonBusyPlayer",
+				"url": "./assets/images/buttonBusyPlayer.png"
+			},
+			{
+				"type": "image",
+				"key": "inviteButton",
+				"url": "./assets/images/inviteButton.png"
+			},
+			{
+				"type": "image",
+				"key": "invitePressedButton",
+				"url": "./assets/images/invitePressedButton.png"
+			},
+			{
+				"type": "image",
+				"key": "backButton",
+				"url": "./assets/images/backButton.png"
+			},
+			{
+				"type": "image",
+				"key": "frame",
+				"url": "./assets/images/frame.png"
+			},
+			{
+				"type": "image",
+				"key": "cellFree",
+				"url": "./assets/images/cellFree.png"
+			},
+			{
+				"type": "image",
+				"key": "cellX",
+				"url": "./assets/images/cellX.png"
+			},
+			{
+				"type": "image",
+				"key": "cellZero",
+				"url": "./assets/images/cellZero.png"
+			},
+			{
+				"type": "image",
+				"key": "cellXHighlighted",
+				"url": "./assets/images/cellXHighlighted.png"
+			},
+			{
+				"type": "image",
+				"key": "cellZeroHighlighted",
+				"url": "./assets/images/cellZeroHighlighted.png"
+			},
+			{
+				"type": "image",
+				"key": "invite",
+				"url": "./assets/images/invite.png"
+			},
+			{
+				"type": "image",
+				"key": "popUp",
+				"url": "./assets/images/popUp.png"
+			},
+			{
+				"type": "image",
+				"key": "getStarsBtn",
+				"url": "./assets/images/getStarsBtn.png"
+			},
+			{
+				"type": "image",
+				"key": "select_Mode",
+				"url": "./assets/images/select_Mode.png"
+			},
+
+			{
+				"type": "image",
+				"key": "expert_z",
+				"url": "./assets/images/expert_z.png"
+			},
+
+			{
+				"type": "image",
+				"key": "expert_g",
+				"url": "./assets/images/expert_g.png"
+			},
+			{
+				"type": "image",
+				"key": "expert",
+				"url": "./assets/images/expert.png"
+			},
+
+			{
+				"type": "image",
+				"key": "amateur",
+				"url": "./assets/images/amateur.png"
+			},
+
+			{
+				"type": "image",
+				"key": "amateur_z",
+				"url": "./assets/images/amateur_z.png"
+			},
+			{
+				"type": "image",
+				"key": "newbie",
+				"url": "./assets/images/newbie.png"
+			},
+			{
+				"type": "image",
+				"key": "star",
+				"url": "./assets/images/star.png"
+			},
+			{
+				"type": "image",
+				"key": "playButton",
+				"url": "./assets/images/playButton.png"
+			},
+			{
+				"type": "image",
+				"key": "confirmButton",
+				"url": "./assets/images/confirmButton.png"
+			},
+			{
+				"type": "image",
+				"key": "left",
+				"url": "./assets/images/left.png"
+			},
+			{
+				"type": "image",
+				"key": "right",
+				"url": "./assets/images/right.png"
+			},
+			{
+				"type": "image",
+				"key": "down",
+				"url": "./assets/images/down.png"
+			},
+			{
+				"type": "image",
+				"key": "up",
+				"url": "./assets/images/up.png"
+			},
+			{
+				"type": "image",
+				"key": "enter",
+				"url": "./assets/images/enter.png"
+			},
+			{
+				"type": "image",
+				"key": "pointer",
+				"url": "./assets/images/pointer.png"
+			},
+			{
+				"type": "image",
+				"key": "timeContainer",
+				"url": "./assets/images/timeContainer.png"
+			},
+			{
+				"type": "image",
+				"key": "timeBar",
+				"url": "./assets/images/timeBar.png"
+			},
+			{
+				"type": "image",
+				"key": "title",
+				"url": "./assets/images/title.png"
+			},
+			{
+				"type": "image",
+				"key": "roomName",
+				"url": "./assets/images/roomName.png"
+			},
+			{
+				"type": "image",
+				"key": "0_line",
+				"url": "./assets/images/0_line.png"
+			},
+			{
+				"type": "image",
+				"key": "1_line",
+				"url": "./assets/images/1_line.png"
+			},
+			{
+				"type": "image",
+				"key": "2_line",
+				"url": "./assets/images/2_line.png"
+			},
+			{
+				"type": "image",
+				"key": "3_line",
+				"url": "./assets/images/3_line.png"
+			},
+			{
+				"type": "image",
+				"key": "cancel",
+				"url": "./assets/images/cancel.png"
+			},
+			{
+				"type": "image",
+				"key": "world",
+				"url": "./assets/images/world.png"
+			},
+			{
+				"type": "image",
+				"key": "mask",
+				"url": "./assets/images/mask.png"
+			},
+
+			{
+				"type": "audio",
+				"key": "theme",
+				"url": "./assets/sounds/theme.mp3"
+			},
+			{
+				"type": "audio",
+				"key": "complete",
+				"url": "./assets/sounds/complete.mp3"
+			},
+			{
+				"type": "audio",
+				"key": "loss",
+				"url": "./assets/sounds/loss.mp3"
+			},
+			{
+				"type": "audio",
+				"key": "move",
+				"url": "./assets/sounds/move.mp3"
+			},
+			{
+				"type": "audio",
+				"key": "failure",
+				"url": "./assets/sounds/failure.mp3"
+			},
+			{
+				"type": "audio",
+				"key": "notification",
+				"url": "./assets/sounds/notification.mp3"
+			},
+			{
+				"type": "audio",
+				"key": "timer",
+				"url": "./assets/sounds/timer.mp3"
+			}
+		]
+	}
+}
