@@ -39,11 +39,16 @@ export class StartScene extends Phaser.Scene {
 
     this.createBackground();
     this.createWordl();
-
     this.createNameGame();
+
     this.createSoundButton();
-    this.createPlayButton();
+    if (this.isMusicEnabled) {
+      this.game.sound.resumeAll();
+    }
+
     this.createWinnersButton();
+
+    this.createPlayButton();
     if (store.isVsComputer || store.isForTwo || store.isGameOnline) {
       this.createPlayButtonActions();
       this.createBackButton();
@@ -52,13 +57,9 @@ export class StartScene extends Phaser.Scene {
       store.isForTwo = false;
     }
 
-    if (this.isMusicEnabled) {
-      this.game.sound.resumeAll();
-    }
     (window as any).ysdk.features.GameplayAPI.stop();
 
   };
-
 
   createBackground() {
     if (GameConfig.width == 2800) {
@@ -70,7 +71,6 @@ export class StartScene extends Phaser.Scene {
   }
 
   createWordl() {
-
     this.world = this.add
       .sprite(
         this.cameras.main.centerX - 345,
@@ -152,8 +152,35 @@ export class StartScene extends Phaser.Scene {
       })
   }
 
-  createWinnersButton() {
+  createSoundButton() {
+    let data: string = localStorage.getItem('isSoundEnable');
+    this.soundButton = new Button(
+      this,
+      this.cameras.main.centerX - 200,
+      this.cameras.main.centerY + 250,
+      null,
+      null,
+      '#d9d9e6',
+      Images.BUTTON_SOUND,
+      'BadComic-Regular',
+      20,
+      data === 'true' ? '' : '         X',
+      () => {
+        if (this.isMusicEnabled) {
+          this.game.sound.pauseAll();
+          localStorage.setItem('isSoundEnable', 'false');
+        } else {
+          this.game.sound.resumeAll();
+          localStorage.setItem('isSoundEnable', 'true');
+        }
+        this.isMusicEnabled = !this.isMusicEnabled;
+        this.soundButton.container.destroy();
+        this.createSoundButton();
+      }
+    );
+  }
 
+  createWinnersButton() {
     const loginText = this.texts[store.lang]?.loginText || this.texts["en"]?.loginText
 
     this.winnersButton = new Button(
@@ -210,11 +237,10 @@ export class StartScene extends Phaser.Scene {
       Images.PLAY_BUTTON,
       null, null, null,
       () => {
-
         this.createBackButton();
         this.createPlayButtonActions();
-
       }
+
     );
   }
 
@@ -304,7 +330,6 @@ export class StartScene extends Phaser.Scene {
               onOpen: (opened: boolean) => {
                 console.log("===== OPENED!!! =====");
                 this.game.sound.pauseAll();
-               // (window as any).ysdk.features.GameplayAPI.stop();
               },
               onError: function (error: boolean) {
                 // some action on error
@@ -313,35 +338,6 @@ export class StartScene extends Phaser.Scene {
             }
           })
         }
-      }
-    );
-  }
-
-  createSoundButton() {
-
-    let data: string = localStorage.getItem('isSoundEnable');
-    this.soundButton = new Button(
-      this,
-      this.cameras.main.centerX - 200,
-      this.cameras.main.centerY + 250,
-      null,
-      null,
-      '#d9d9e6',
-      Images.BUTTON_SOUND,
-      'BadComic-Regular',
-      20,
-      data === 'true' ? '' : '         X',
-      () => {
-        if (this.isMusicEnabled) {
-          this.game.sound.pauseAll();
-          localStorage.setItem('isSoundEnable', 'false');
-        } else {
-          this.game.sound.resumeAll();
-          localStorage.setItem('isSoundEnable', 'true');
-        }
-        this.isMusicEnabled = !this.isMusicEnabled;
-        this.soundButton.container.destroy();
-        this.createSoundButton();
       }
     );
   }

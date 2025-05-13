@@ -123,13 +123,11 @@ export class BootScene extends Phaser.Scene {
     }
     localStorage.setItem('isSoundEnable', 'true');
     this.game.sound.resumeAll();
-    (window as any).ysdk.features.GameplayAPI.stop();
+    
     if (store.isGameOnline) {
-      //console.log(101)
       this.scene.start('Game');
     } else {
       this.scene.start('Start');
-      //console.log(102)
 
     }
   }
