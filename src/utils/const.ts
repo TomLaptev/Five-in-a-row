@@ -45,6 +45,7 @@ export enum Images {
 	POINTER = 'pointer',
 	POPUP = 'popUp',	
 	STAR = 'star',
+	STAR0_5 = 'star0_5',
 	TIMECONTAINER = 'timeContainer',
 	TIMEBAR = 'timeBar',
 	WORLD = 'world',

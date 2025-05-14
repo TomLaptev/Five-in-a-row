@@ -184,7 +184,7 @@ export default class GameScene extends Phaser.Scene {
     this.isOnlineStarting = false;
     if (!this.games) {
       this.starsNumber = this.prizeStarNumber;
-    } else if ( +localStorage.getItem('stars') > 0) {
+    } else if (+localStorage.getItem('stars') > 0) {
       this.starsNumber = +localStorage.getItem('stars');
     } else this.starsNumber = 0;
 
@@ -401,7 +401,8 @@ export default class GameScene extends Phaser.Scene {
       this.add.sprite(
         this.timeContainer.x - 80 + i * 60,
         this.timeContainer.y,
-        Images.STAR)
+        (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+      )
     }
   }
 
@@ -757,7 +758,8 @@ export default class GameScene extends Phaser.Scene {
         this.add.sprite(
           this.timeContainer.x - 80 + i * 60,
           this.timeContainer.y,
-          Images.STAR)
+          (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+        )
       }
     }
 

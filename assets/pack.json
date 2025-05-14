@@ -147,6 +147,11 @@
 			},
 			{
 				"type": "image",
+				"key": "star0_5",
+				"url": "./assets/images/star0_5.png"
+			},
+			{
+				"type": "image",
 				"key": "playButton",
 				"url": "./assets/images/playButton.png"
 			},
