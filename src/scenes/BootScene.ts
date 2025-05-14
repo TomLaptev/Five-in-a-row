@@ -17,9 +17,9 @@ export class BootScene extends Phaser.Scene {
       .then((ysdk: any) => {
         (window as any).ysdk = ysdk;
 
-       // Получение языка через SDK
+        //Получение языка через SDK
         store.lang = ysdk.environment.i18n.lang;;
-        console.log('Язык из SDK:', store.lang);
+        //console.log('Язык из SDK:', store.lang);
 
         return ysdk
       })
@@ -62,7 +62,7 @@ export class BootScene extends Phaser.Scene {
     const YaSdk = await this.initSDK();
     (window as any).ysdk = YaSdk;
     (window as any).player = await (window as any).ysdk.getPlayer();
-    console.log((window as any).player);
+    //console.log((window as any).player);
 
     store.avatar = (window as any).player.getPhoto("large");
 
@@ -73,11 +73,10 @@ export class BootScene extends Phaser.Scene {
     });
     this.load.start();
 
-
-    console.log((window as any).player);
+    //console.log((window as any).player);
 
     store.id = await (window as any).player.getUniqueID().replace(/\//g, "0");
-    console.log(store.id);
+    // console.log(store.id);
 
     this.playerName = await (window as any).player.getName();
     store.playerName = this.playerName;
@@ -123,7 +122,7 @@ export class BootScene extends Phaser.Scene {
     }
     localStorage.setItem('isSoundEnable', 'true');
     this.game.sound.resumeAll();
-    
+
     if (store.isGameOnline) {
       this.scene.start('Game');
     } else {

@@ -44,7 +44,7 @@ export default class GameAlgoritm {
       this.isMoveAllowed = false;
       this.scene.pointer.destroy();
 
-      console.log('cell.id: ', cell.id);
+     // console.log('cell.id: ', cell.id);
 
       //для крестика "обесцвечиваем" предыдущий нолик
       if (this.moveStorage.length % 2 == 0) {
@@ -71,6 +71,7 @@ export default class GameAlgoritm {
         store.isYouX ? this.cellsGA.push(cell) : this.cellsR.push(cell);
       }
       this.moveStorage.push(cell);
+      //console.log('this.moveStorage.length:', this.moveStorage.length)
       this.scene.sounds.move.play({ volume: 0.5 });
       this.scene.createTimeBar();
       this.scene.timeMask.destroy();
@@ -86,8 +87,11 @@ export default class GameAlgoritm {
         this.scene.games++;
       }
 
-      localStorage.setItem('stars', ` ${this.scene.starsNumber}`);
-      console.log('stars:', this.scene.starsNumber);
+      if (!store.isForTwo) {
+        localStorage.setItem('stars', ` ${this.scene.starsNumber}`);
+        //console.log('stars:', this.scene.starsNumber);
+      }
+
       //=========================================================================================
 
       this.scene.createPointer();
@@ -284,7 +288,7 @@ export default class GameAlgoritm {
 
             console.log("атака");
 
-             if (this.moveStorage.length < 3) {
+            if (this.moveStorage.length < 3) {
               this.onCellClicked(this.scene.cells[this.sampleGA[Math.floor(Math.random() * 3)].id]);;
 
             } else {

@@ -141,15 +141,15 @@ export default class GameScene extends Phaser.Scene {
     this.games = store.gameData.games === undefined ? 0 : store.gameData.games;
     this.wins = store.gameData.wins === undefined ? 0 : store.gameData.wins;
 
-    console.log('this.games :', this.games);
-    console.log('this.wins :', this.wins);
+    //console.log('this.games :', this.games);
+    //console.log('this.wins :', this.wins);
 
     this.BOARD = new Board(this);
     this.GA = new GameAlgoritm(this);
     this.texts = this.cache.json.get("texts");
     this.isMusicEnabled = localStorage.getItem('isSoundEnable') === 'true' ? true : false;
     if (this.isMusicEnabled) {
-      this.game.sound.resumeAll();     
+      this.game.sound.resumeAll();
     }
     this.isPopUpCheckStars = false;
     this.timeReserve = true;
@@ -171,22 +171,24 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async setPlayerRating() {
-    console.log('store.gameData.score:', store.gameData.score)
+    //console.log('store.gameData.score:', store.gameData.score)
     this.playerRating = store.gameData.score === undefined
       || store.gameData.score === null
       || store.gameData.score < 1000 ? 1100 : store.gameData.score;
 
-    console.log('this.playerRating :', this.playerRating);
+    //console.log('this.playerRating :', this.playerRating);
   }
 
   setStars() {
-    +localStorage.getItem('stars') < 0 ? localStorage.setItem('stars', "") : 1;
+    //this.starsNumber < 0 ? this.starsNumber = 0 : 1;
     this.isOnlineStarting = false;
     if (!this.games) {
       this.starsNumber = this.prizeStarNumber;
-    } else {
+    } else if ( +localStorage.getItem('stars') > 0) {
       this.starsNumber = +localStorage.getItem('stars');
-    }
+    } else this.starsNumber = 0;
+
+
     if (this.socket && this.starsNumber == 0) {
       this.socket.emit("updatePlayersStatus", {
         id: this.socket.id,
@@ -410,13 +412,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async startGameOnline() {
-    console.log('this.buttonExitPressed: ', this.buttonExitPressed)
+    //console.log('this.buttonExitPressed: ', this.buttonExitPressed)
 
     this.setPlayerRating();
     this.setStars();
 
-    console.log('this.isRoom: ', this.isRoom);
-    console.log('this.socket: ', this.socket);
+    // console.log('this.isRoom: ', this.isRoom);
+    // console.log('this.socket: ', this.socket);
     if (!this.isRoom) {
       if (!this.socket) {
         this.initSocket();
@@ -430,17 +432,17 @@ export default class GameScene extends Phaser.Scene {
   }
 
   chooseRival() {
-      (window as any).ysdk.features.GameplayAPI.start();    
+    (window as any).ysdk.features.GameplayAPI.start();
 
     store.isYouX = !store.isYouX; //Вы - X => 0	
-    console.log('store.isVsComputer: ', store.isVsComputer);
-    console.log('store.isGameOnline: ', store.isGameOnline);
-    console.log('this.opponentId: ', this.opponentId);
+    // console.log('store.isVsComputer: ', store.isVsComputer);
+    // console.log('store.isGameOnline: ', store.isGameOnline);
+    // console.log('this.opponentId: ', this.opponentId);
 
     if (store.isVsComputer || store.isGameOnline && !this.opponentId) {
 
       localStorage.setItem('stars', ` ${this.starsNumber}`);
-      console.log('this.starsNumber: ', this.starsNumber);
+      // console.log('this.starsNumber: ', this.starsNumber);
     }
     this.BOARD.drawBoard();
     this.createPointer();
@@ -512,7 +514,7 @@ export default class GameScene extends Phaser.Scene {
       const avatar: any = this.add.sprite(
         this.cameras.main.centerX - 370,
         this.cameras.main.centerY - 345,
-        store.avatarKey ? store.avatarKey :  Images.AVATAR
+        store.avatarKey ? store.avatarKey : Images.AVATAR
       )
         .setOrigin(0.5, 0);
       avatar.setScale(0.45);
@@ -587,7 +589,7 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  createTimeBar() {    
+  createTimeBar() {
     const yourTurnText = this.texts[store.lang]?.yourTurnText || this.texts["en"]?.yourTurnText;
     const rivalTurnText = this.texts[store.lang]?.rivalTurnText || this.texts["en"]?.rivalTurnText;
 
@@ -640,7 +642,6 @@ export default class GameScene extends Phaser.Scene {
         this.timeMask.x -= stepWidth;
         if (this.timeForGame < 40 && this.timeForGame % 4 === 0) {
           this.createSingleSound();
-          console.log(777);
         };
 
         this.timeForGame == 0 ? this.timeReserve = false : 1;
@@ -686,7 +687,7 @@ export default class GameScene extends Phaser.Scene {
     this.lastMove = null;
 
     this.Timer.destroy();
-    console.log(this.isTimerOn);
+    //console.log('this.isTimerOn: ', this.isTimerOn);
     (window as any).ysdk.features.GameplayAPI.stop();
 
     this.textForMove ? this.textForMove.destroy() : 1;
@@ -736,7 +737,6 @@ export default class GameScene extends Phaser.Scene {
       finalText = winnerText;
       this.sounds.complete.play();
       this.gameResult = 1;
-      console.log(103);
 
     } else if (this.GA.isFinish && (store.isYouX && this.GA.moveStorage.length % 2 === 0
       || !store.isYouX && this.GA.moveStorage.length % 2)) {
@@ -1148,7 +1148,7 @@ export default class GameScene extends Phaser.Scene {
             this.scene.start("Boot");
           })
             .catch(() => {
-              console.log ("Игрок не авторизован.")
+              console.log("Игрок не авторизован.")
             });
         }
       }
@@ -1270,8 +1270,7 @@ export default class GameScene extends Phaser.Scene {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
         if (this.starsNumber) {
-          this.сreateProfile('', /* (window as any).gameLang */store.lang, /* 'expert' */expertText, 1400, '', '> 1000', '> 1000');
-          console.log(`${(window as any).gameLang}`)
+          this.сreateProfile('', store.lang, expertText, 1400, '', '> 1000', '> 1000');
         } else if (this.starsNumber <= 0) {
           this.deleteControlPanele();
           this.deletePlayersContainer();
@@ -1371,14 +1370,14 @@ export default class GameScene extends Phaser.Scene {
 
   //--------------  Обработчик обновлений комнаты	---------------------------------------	
   handleRoomUpdate(roomData: any): void { //on("roomUpdate")
-    console.log(`this.starsNumber: ${this.starsNumber} `);
+    // console.log(`this.starsNumber: ${this.starsNumber} `);
     this.pagination.show();
     if (roomData) {
       this.isRoom = true;
       this.roomData = true;
 
-      console.log("isYouX:", roomData.isYouX);
-      console.log("name:", roomData.name);
+      // console.log("isYouX:", roomData.isYouX);
+      // console.log("name:", roomData.name);
 
       this.deleteControlPanele();
 
@@ -1407,10 +1406,10 @@ export default class GameScene extends Phaser.Scene {
 
       if (roomData.status === "playing") {
         this.isGameFinished = false;
-        console.log('this.isGameFinished: ', this.isGameFinished)
+        //console.log('this.isGameFinished: ', this.isGameFinished)
 
         if (roomData.lastMove && !this.isOnlineStarting) {
-          console.log(roomData.lastMove);
+          // console.log(roomData.lastMove);
           this.isOnlineStarting = true;
         }
 
@@ -1424,8 +1423,8 @@ export default class GameScene extends Phaser.Scene {
         this.GA.onCellClicked(this.cells[roomData.lastMove]);
       }
 
-      console.log('this.opponentExists: ', this.opponentExists)
-      console.log(`this.starsNumber: ${this.starsNumber} `);
+      // console.log('this.opponentExists: ', this.opponentExists)
+      // console.log(`this.starsNumber: ${this.starsNumber} `);
     }
   }
 
@@ -1457,7 +1456,7 @@ export default class GameScene extends Phaser.Scene {
       } else if (this.isGameSession && this.isRoom && !this.isNewbie) {
         this.opponentExists = false;
         this.createEndSession();
-      } 
+      }
     }
 
     this.isGameFinished = false;
@@ -2072,10 +2071,14 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`isRoom: ${this.isRoom} `); //true
     // console.log(`isGameFinished: ${this.isGameFinished} `); //false
 
+    if (!this.isGameSession) {
+      this.actionButtonConfirm();
+    }
+
     this.isGameSession = false;
     this.opponentExists = false;
 
-    console.log(101)
+    //console.log(101)
     if (this.isTimerOn) {
       this.createEndSession();
     }
@@ -2117,13 +2120,13 @@ export default class GameScene extends Phaser.Scene {
   onCellClickedOnline(cell: Cell) {
     if (this.opponentId && this.isTimerOn) {
       this.opponentExists = true;
-      console.log('есть нажатие!')
-      console.log(this.textInTimeBar);
-      console.log(store.isYouX);
+      // console.log('есть нажатие!')
+      // console.log(this.textInTimeBar);
+      // console.log(store.isYouX);
 
-      console.log('this.isGameSession: ', this.isGameSession);
-      console.log('store.isYouX: ', store.isYouX);
-      console.log('this.GA.moveStorage.length: ', this.GA.moveStorage.length);
+      // console.log('this.isGameSession: ', this.isGameSession);
+      // console.log('store.isYouX: ', store.isYouX);
+      // console.log('this.GA.moveStorage.length: ', this.GA.moveStorage.length);
 
       if (this.isGameSession && (store.isYouX && this.GA.moveStorage.length % 2 == 0
         || !store.isYouX && this.GA.moveStorage.length % 2 !== 0)) {
