@@ -656,6 +656,16 @@ export default class GameScene extends Phaser.Scene {
 
         if (this.GA.isFinish) {
           this.Timer.destroy();
+          this.createTimeBar();
+
+          for (let i = 0; i < this.starsNumber; i++) {
+            this.add.sprite(
+              this.timeContainer.x - 80 + i * 60,
+              this.timeContainer.y,
+              (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+            )
+          }
+
           setTimeout(() => {
             if (store.isGameOnline && this.opponentExists
               || !this.opponentId) {
@@ -683,17 +693,26 @@ export default class GameScene extends Phaser.Scene {
     const firstMoveNotMadeText = this.texts[store.lang]?.firstMoveNotMadeText || this.texts["en"]?.firstMoveNotMadeText;
     const anotherGameText = this.texts[store.lang]?.anotherGameText || this.texts["en"]?.anotherGameText;
 
+    for (let i = 0; i < this.starsNumber; i++) {
+      this.add.sprite(
+        this.timeContainer.x - 80 + i * 60,
+        this.timeContainer.y,
+        (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+      )
+    }
+
     this.isGameFinished = true;
     this.GA.isFinish = true;
     this.lastMove = null;
 
     this.Timer.destroy();
-    //console.log('this.isTimerOn: ', this.isTimerOn);
     (window as any).ysdk.features.GameplayAPI.stop();
 
     this.textForMove ? this.textForMove.destroy() : 1;
+    if (!this.GA.isFinish) {
+      this.createTimeBar();
+    }
 
-    this.createTimeBar();
     this.clearExitElements();
 
     let popUp: any = this.add.sprite(this.cameras.main.centerX - 300,
@@ -754,13 +773,14 @@ export default class GameScene extends Phaser.Scene {
         this.createRate();
       }
 
-      for (let i = 0; i < this.starsNumber; i++) {
-        this.add.sprite(
-          this.timeContainer.x - 80 + i * 60,
-          this.timeContainer.y,
-          (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-        )
-      }
+
+      /*  for (let i = 0; i < this.starsNumber; i++) {
+         this.add.sprite(
+           this.timeContainer.x - 80 + i * 60,
+           this.timeContainer.y,
+           (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+         )
+       } */
     }
 
     const finalTextBlock = this.add.text(popUp.x + 300, popUp.y + 135,

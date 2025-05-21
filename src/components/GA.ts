@@ -78,9 +78,9 @@ export default class GameAlgoritm {
 
       if (this.moveStorage.length == 2
         && !store.isForTwo
-        && !this.scene.isNewbie
+       //&& !this.scene.isNewbie
       ) {
-        this.scene.starsNumber -= 0.5;
+        this.scene.starsNumber >= 0.5 ? this.scene.starsNumber -= 0.5 : 1;
       }
 
       if (this.moveStorage.length == 2) {
