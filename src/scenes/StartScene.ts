@@ -14,7 +14,7 @@ export class StartScene extends Phaser.Scene {
   confirmButton: Button;
   popUp: any;
   exitFromGamePopUp: any;
-  isMusicEnabled: boolean = localStorage.getItem('isSoundEnable') === 'true' ? true : false;
+  isMusicEnabled: boolean;
   texts: Record<string, Record<string, string>> = {};
   world: any;
   backButton: any;
@@ -29,12 +29,8 @@ export class StartScene extends Phaser.Scene {
     this.load.json("texts", "assets/texts.json");
   }
 
-  create() {
-    //store.lang = 'ru';
-
-    // Сообщаем платформе, что игра загрузилась и можно начинать играть.
-    (window as any).ysdk.features.LoadingAPI?.ready();
-
+ create() {
+    store.lang = 'ru';
     this.texts = this.cache.json.get("texts");
 
     this.createBackground();
@@ -42,9 +38,11 @@ export class StartScene extends Phaser.Scene {
     this.createNameGame();
 
     this.createSoundButton();
-    if (this.isMusicEnabled) {
-      this.game.sound.resumeAll();
-    }
+    this.input.on('pointerdown', () => {
+  if (store.isMusicEnabled) {
+    this.game.sound.resumeAll();
+  }
+});
 
     this.createWinnersButton();
 
@@ -57,7 +55,7 @@ export class StartScene extends Phaser.Scene {
       store.isForTwo = false;
     }
 
-    (window as any).ysdk.features.GameplayAPI.stop();
+    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
   };
 
@@ -166,14 +164,14 @@ export class StartScene extends Phaser.Scene {
       20,
       data === 'true' ? '' : '         X',
       () => {
-        if (this.isMusicEnabled) {
+        if (store.isMusicEnabled) {
           this.game.sound.pauseAll();
           localStorage.setItem('isSoundEnable', 'false');
         } else {
           this.game.sound.resumeAll();
           localStorage.setItem('isSoundEnable', 'true');
         }
-        this.isMusicEnabled = !this.isMusicEnabled;
+        store.isMusicEnabled = !store.isMusicEnabled;
         this.soundButton.container.destroy();
         this.createSoundButton();
       }
@@ -277,7 +275,6 @@ export class StartScene extends Phaser.Scene {
               onOpen: (opened: boolean) => {
                 console.log("===== OPENED!!! =====");
                 this.game.sound.pauseAll();
-                //(window as any).ysdk.features.GameplayAPI.stop();
               },
               onError: function (error: boolean) {
                 // some action on error

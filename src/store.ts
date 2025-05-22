@@ -3,10 +3,9 @@
     id:any,
     avatar: any;
     avatarKey: string;
-    playerCode: string,
     available: boolean;
     isMobile: any,
-    isSoundEnable: string,
+    isMusicEnabled: boolean;
     playerName: string,
     lang: string,
     gameData: any,
@@ -20,13 +19,12 @@
     isVsComputer: boolean;
     isForTwo: boolean;
     isGameOnline: boolean;
-    isGameOnlinePressed: boolean;
     isYouX: boolean;
 }
 
 const store: IStore = {
     isMobile: null,
-    isSoundEnable: localStorage.getItem('isSoundEnable'),
+    isMusicEnabled: localStorage.getItem('isSoundEnable') === 'true' ? true : false,
     playerName: null,
     lang: '',
     lb: null,
@@ -39,12 +37,10 @@ const store: IStore = {
     isVsComputer: false, 
     isForTwo: false,
     isGameOnline : false,
-    isGameOnlinePressed : false,
     isYouX: false,
     id: null,
     avatar: null,
     avatarKey: "",
-    playerCode: null,
     available: true,
     gameData: null,
 }

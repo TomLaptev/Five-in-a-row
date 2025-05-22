@@ -4,7 +4,7 @@
 		"rivalNameText": "Соперник",
 
 		"gameName": "Пять в ряд, \noнлайн",
-		"loginText": "Для авторизованных \nпользователей.\n\nХотите авторизоваться?",
+		"loginText": "Таблица лидеров доступна \nтолько авторизованным \nпользователям.\n\nХотите авторизоваться?",
 		"yesText": "да",
     "exitWarningText": "Готовы ли вы\nпотерпеть поражение,\nчтобы выйти из игры?",
 		"continueGameText": "Продолжить игру",
@@ -48,7 +48,7 @@
 		"rivalNameText": "Rival",
 
 		"gameName": "Five in a row, \nonline",
-		"loginText": "For authorized users.\n\nDo you want to log in?",
+		"loginText": "The leaderboard is \nonly available to\nauthorized users. \n\nDo you want to log in?",
 		"yesText": "Yes",
     "exitWarningText": "Are you willing\nsuffer a defeat\nto quit the game?",
 		"continueGameText": "Continue game",
@@ -92,7 +92,7 @@
 		"rivalNameText": "Rival",
 
 		"gameName": "Cinq d'affilée, \nen ligne",
-		"loginText": "Pour les utilisateurs \nautorisés.\nVoulez-vous \nvous connecter ?",
+		"loginText": "Le classement n'est \naccessible qu'aux \nutilisateurs autorisés.\nVoulez-vous \nvous connecter ?",
 		"yesText": "Oui",
     "exitWarningText": "Es-tu prêt\nà subir une défaite\npour quitter le jeu ?",
 		"continueGameText": "Continuer le jeu",
@@ -136,7 +136,7 @@
 		"rivalNameText": "Rival",
 
 		"gameName": "Cinco seguidas,  \non-line",
-		"loginText": "Para usuários \nautorizados.\n\nVocê quer fazer login?",
+		"loginText": "A tabela de classificação \nestá disponível apenas  \npara usuários autorizados.\n\nVocê quer fazer login?",
 		"yesText": "Sim",
     "exitWarningText": "Você está disposto\na sofrer uma derrota para\nsair do jogo?",
 		"continueGameText": "Continuar jogo",
@@ -180,7 +180,7 @@
 		"rivalNameText": "Rakip",
 
 		"gameName": "Beş üst üste, \nçevrimiçi",
-		"loginText": "Yetkili kullanıcılar için.\nGiriş yapmak \n\nistiyor musunuz?",
+		"loginText": "Liderlik tablosuna \nyalnızca yetkili \nkullanıcılar erişebilir. \n\nGiriş yapmak istiyor musunuz?",
 		"yesText": "Evet",
     "exitWarningText": "Oyunu bırakmak\niçin yenilgiyi \n göze alır mısınız?",
 		"continueGameText": "Oyuna devam et",
@@ -225,7 +225,7 @@
 		"rivalNameText": "Rivale",
 
 		"gameName": "Fünf in einer Reihe,\nonline",
-		"loginText": "Für autorisierte Benutzer.\n\nMöchten Sie sich \nanmelden?",
+		"loginText": "Die Bestenliste ist\nnur für autorisierte \nBenutzer zugänglich. \n\nMöchten Sie sich anmelden?",
 		"yesText": "Ja",
     "exitWarningText": "Sind Sie bereit zu verlieren,\n um aus dem Spiel \nauszusteigen?",
 		"continueGameText": "Spiel fortsetzen",
@@ -269,7 +269,7 @@
 		"rivalNameText": "Rival",
 
 		"gameName": "Cinco seguidos, \nen línea",
-		"loginText": "Para autorizado\nusuarios.\n\n¿Quieres iniciar sesión?",
+		"loginText": "La tabla de clasificación\nsolo está disponible\npara usuarios autorizados.\n\n¿Quieres iniciar sesión?",
 		"yesText": "Sí",
     "exitWarningText": "Estás listo\nfallar,\n¿salir del juego?",
 		"continueGameText": "Continuar juego",
@@ -313,7 +313,7 @@
 		"rivalNameText": "競爭對手",
 
 		"gameName": "五連勝，\n在線",
-		"loginText": "對於授權的\n用戶。\n\n您想登入嗎？",
+		"loginText": "排行榜僅供授權使用\n者使用。\n\n您想登入嗎？",
 		"yesText": "是的",
     "exitWarningText": "你準備好了嗎\n接受失敗\n退出遊戲？",
 		"continueGameText": "繼續遊戲",

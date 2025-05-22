@@ -69,7 +69,6 @@ export class BootScene extends Phaser.Scene {
     this.load.image("user", store.avatar);
     this.load.once("complete", () => {
       store.avatarKey = "user"; // Сохраняем ключ загруженного изображения
-      //this.createProfilePlayer();
     });
     this.load.start();
 
@@ -99,7 +98,6 @@ export class BootScene extends Phaser.Scene {
       try {
         await (window as any).ysdk.getLeaderboards().then(
           (lb: any) => lb.getLeaderboardPlayerEntry('mainLeaderboard')
-          // .then((res: any) => store.playerData = res)
         )
       } catch (e) {
         console.log('запрос LeaderboardPlayerEntry', e);
@@ -112,23 +110,39 @@ export class BootScene extends Phaser.Scene {
     (window as any).ysdk.adv.showBannerAdv();
   }
 
-  create(): void {
+  async create() {
 
     this.texts = this.cache.json.get("texts");
 
-    if (!store.soundTrack) {
-      new SoundManager(this);
-      store.soundTrack = true;
-    }
+    new SoundManager(this);
+
     localStorage.setItem('isSoundEnable', 'true');
-    this.game.sound.resumeAll();
 
     if (store.isGameOnline) {
       this.scene.start('Game');
     } else {
       this.scene.start('Start');
-
     }
+
+    document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    console.log('Страница скрыта');
+    this.game.sound.pauseAll();
+  } else if (document.visibilityState === 'visible') {
+    console.log('Страница снова видима');
+    if (store.isMusicEnabled) {
+      this.game.sound.resumeAll();
+    }
+  } 
+});
+
+
+    await this.initSDK(); // Ждем SDK.
+    // Сообщаем платформе, что игра загрузилась и можно начинать играть.
+    if ((window as any).ysdk?.features?.LoadingAPI?.ready) {
+      (window as any).ysdk.features.LoadingAPI.ready();
+    }
+
   }
 
   private createLoadingbar(): void {

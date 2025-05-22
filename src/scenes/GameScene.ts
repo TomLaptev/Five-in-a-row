@@ -134,7 +134,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    (window as any).ysdk.features.GameplayAPI.stop();
+    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
     store.gameData = await (window as any).player.getData();
     console.log("store.gameData:", store.gameData);
 
@@ -147,10 +147,13 @@ export default class GameScene extends Phaser.Scene {
     this.BOARD = new Board(this);
     this.GA = new GameAlgoritm(this);
     this.texts = this.cache.json.get("texts");
-    this.isMusicEnabled = localStorage.getItem('isSoundEnable') === 'true' ? true : false;
-    if (this.isMusicEnabled) {
-      this.game.sound.resumeAll();
-    }
+
+    this.input.on('pointerdown', () => {
+      if (store.isMusicEnabled) {
+        this.game.sound.resumeAll();
+      }
+    });
+
     this.isPopUpCheckStars = false;
     this.timeReserve = true;
     this.isTimerOn = false;
@@ -180,7 +183,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   setStars() {
-    //this.starsNumber < 0 ? this.starsNumber = 0 : 1;
     this.isOnlineStarting = false;
     if (!this.games) {
       this.starsNumber = this.prizeStarNumber;
@@ -433,7 +435,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   chooseRival() {
-    (window as any).ysdk.features.GameplayAPI.start();
+    (window as any).ysdk?.features?.GameplayAPI?.start?.();
 
     store.isYouX = !store.isYouX; //Вы - X => 0	
     // console.log('store.isVsComputer: ', store.isVsComputer);
@@ -706,7 +708,7 @@ export default class GameScene extends Phaser.Scene {
     this.lastMove = null;
 
     this.Timer.destroy();
-    (window as any).ysdk.features.GameplayAPI.stop();
+    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     this.textForMove ? this.textForMove.destroy() : 1;
     if (!this.GA.isFinish) {
@@ -773,14 +775,6 @@ export default class GameScene extends Phaser.Scene {
         this.createRate();
       }
 
-
-      /*  for (let i = 0; i < this.starsNumber; i++) {
-         this.add.sprite(
-           this.timeContainer.x - 80 + i * 60,
-           this.timeContainer.y,
-           (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-         )
-       } */
     }
 
     const finalTextBlock = this.add.text(popUp.x + 300, popUp.y + 135,
@@ -842,9 +836,6 @@ export default class GameScene extends Phaser.Scene {
           })
         }
 
-        if (this.isMusicEnabled) {
-          this.game.sound.resumeAll();
-        }
       }
     );
     this.GA.moveStorage.length = 0;
@@ -1261,7 +1252,7 @@ export default class GameScene extends Phaser.Scene {
         }
       }
 
-      if (!this.isPopUpCheckStars /* && !this.playersContainer */) {
+      if (!this.isPopUpCheckStars) {
         this.createPlayersContainer();
         this.createControlPanele();
       }
@@ -1408,7 +1399,7 @@ export default class GameScene extends Phaser.Scene {
         this.сreateProfile(roomData.id, roomData.lang, roomData.name, roomData.rating, roomData.avatar, roomData.games, roomData.wins);
 
         this.privateRoomId = this.rivalRoomId;
-        store.isYouX = !roomData.isYouX;//!
+        store.isYouX = !roomData.isYouX;
       }
 
       if (roomData.status === "ready") {
@@ -1655,7 +1646,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.time.delayedCall(animationDuration * 5, () => {
       if (this.socket == null || this.socket && this.socket.id == null) {
-        console.log('number: ', 123);
+        //console.log('number: ', 123);
 
         const errorTextBlock = this.add.text(0, radius + 60, errorText, {
           font: "16px BadComic-Regular",
