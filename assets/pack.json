@@ -48,8 +48,8 @@
 			},
 			{
 				"type": "image",
-				"key": "invitePressedButton",
-				"url": "./assets/images/invitePressedButton.png"
+				"key": "refusalButton",
+				"url": "./assets/images/refusalButton.png"
 			},
 			{
 				"type": "image",

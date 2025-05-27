@@ -114,6 +114,7 @@ export default class GameScene extends Phaser.Scene {
   refereeBtn: any | null = null;
   continueGameButton: Button | null = null;
   readyToLoseTextBlock: any | null = null;
+  soundButton: Button;
 
 
 
@@ -657,15 +658,18 @@ export default class GameScene extends Phaser.Scene {
         }
 
         if (this.GA.isFinish) {
+          this.timeMask.x = -this.timeMask.displayWidth
           this.Timer.destroy();
-          this.createTimeBar();
+          this.textForMove.destroy();
 
-          for (let i = 0; i < this.starsNumber; i++) {
-            this.add.sprite(
-              this.timeContainer.x - 80 + i * 60,
-              this.timeContainer.y,
-              (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-            )
+          if (!store.isForTwo) {
+            for (let i = 0; i < this.starsNumber; i++) {
+              this.add.sprite(
+                this.timeContainer.x - 80 + i * 60,
+                this.timeContainer.y,
+                (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+              )
+            }
           }
 
           setTimeout(() => {
@@ -695,12 +699,14 @@ export default class GameScene extends Phaser.Scene {
     const firstMoveNotMadeText = this.texts[store.lang]?.firstMoveNotMadeText || this.texts["en"]?.firstMoveNotMadeText;
     const anotherGameText = this.texts[store.lang]?.anotherGameText || this.texts["en"]?.anotherGameText;
 
-    for (let i = 0; i < this.starsNumber; i++) {
-      this.add.sprite(
-        this.timeContainer.x - 80 + i * 60,
-        this.timeContainer.y,
-        (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-      )
+    if (!store.isForTwo) {
+      for (let i = 0; i < this.starsNumber; i++) {
+        this.add.sprite(
+          this.timeContainer.x - 80 + i * 60,
+          this.timeContainer.y,
+          (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+        )
+      }
     }
 
     this.isGameFinished = true;
@@ -711,9 +717,7 @@ export default class GameScene extends Phaser.Scene {
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     this.textForMove ? this.textForMove.destroy() : 1;
-    if (!this.GA.isFinish) {
-      this.createTimeBar();
-    }
+    this.timeMask.x = -this.timeMask.displayWidth
 
     this.clearExitElements();
 
@@ -726,6 +730,7 @@ export default class GameScene extends Phaser.Scene {
     let isCalculateRating: boolean = true;
 
     console.log('store.isYouX:', store.isYouX);
+
     if (this.exitFromGamePopUp) {
       finalText = loserText;
       this.sounds.loss.play();
@@ -1512,7 +1517,7 @@ export default class GameScene extends Phaser.Scene {
       // Обновляем состояние игроков (available: false)			
       this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId, available: false, rating: this.playerRating });
       this.socket.emit("requestPlayers");
-      this.createMailIcon();
+      //this.createMailIcon();
     } else {
       setTimeout(() => {
         if (!this.isBackButtonPressed) {
@@ -1838,13 +1843,15 @@ export default class GameScene extends Phaser.Scene {
 
     this.sys.game.device.os.desktop ? this.rivalName = name : this.rivalName = rivalNameText;
     this.rivalRating = rating;
-    let isInviteButtonPressed: boolean = false;
+    // let isInviteButtonPressed: boolean = false;
+
+    let inviteTextTween: any;
 
     this.deletePlayersContainer();
     this.deleteControlPanele();
     this.clearProfileContainer();
 
-    this.profileContainer = this.add.container(this.cameras.main.centerX - 300, this.cameras.main.centerY - 220);//для отображения на дисплее
+    this.profileContainer = this.add.container(this.cameras.main.centerX - 300, this.cameras.main.centerY - 220);//для отображения на дисплее    
 
     //Вызов динамической загрузки аватара
     console.log(avatarUrl)
@@ -1876,43 +1883,66 @@ export default class GameScene extends Phaser.Scene {
           if (pointer.rightButtonDown()) {
             return; // Игнорируем правую кнопку, ничего не делаем
           }
-          if (!isInviteButtonPressed) {
-            isInviteButtonPressed = true;
-            inviteTextBlock.setAlpha(0);
-            if (!this.opponentId) {
-              this.sendGameInvite(id, name);
 
-            } else if (this.isSender) {
-              this.sendGameInvite(id, name);
-              this.isRoom = true;
+          // Останавливаем пульсирующую анимацию текста
+          if (inviteTextTween) {
+            inviteTextTween.stop();
+            inviteTextTween.remove(); // Удаляем из TweenManager
+          }
 
-            } else if (this.isRoom) {
-              console.log("Отправка обновления:", {
-                roomId: this.rivalRoomId,
-                opponentId: this.opponentId,
-                updatedData: { status: "ready" },
-              });
+          // Удаляем текст с экрана
+          if (inviteTextBlock) {
+            inviteTextBlock.destroy();
+            inviteTextBlock = null;
+          }
 
-              this.socket.emit("updatingRoomData", {
-                roomId: this.rivalRoomId,
-                opponentId: this.opponentId,
-                updatedData: { status: "ready" }
-              });
-              this.scene.restart();
+          // Запускаем анимацию иконки
+          this.mailIcon.setAlpha(1);
 
+          this.tweens.add({
+            targets: this.mailIcon,
+            x: this.inviteButton.x + this.inviteButton.width * 0.9,
+            angle: 360,
+            duration: 7500,
+            ease: 'Linear',
+            repeat: -1,
+            onComplete: () => {
+              this.mailIcon.setAlpha(0);
             }
+          });
+
+
+          if (!this.opponentId) {
+            this.sendGameInvite(id, name);
+
+          } else if (this.isSender) {
+            this.sendGameInvite(id, name);
+            this.isRoom = true;
+
+          } else if (this.isRoom) {
+            console.log("Отправка обновления:", {
+              roomId: this.rivalRoomId,
+              opponentId: this.opponentId,
+              updatedData: { status: "ready" },
+            });
+
+            this.socket.emit("updatingRoomData", {
+              roomId: this.rivalRoomId,
+              opponentId: this.opponentId,
+              updatedData: { status: "ready" }
+            });
+            this.scene.restart();
+
           }
         });
+
+    //----------------------------------------------------------------------
 
     // Создаем иконку письма, но делаем её невидимой
     this.mailIcon = this.add.sprite(this.inviteButton.x + this.inviteButton.width * 0.1, this.inviteButton.y + 30, Images.INVITE)
       .setOrigin(0.5, 0.5)
       .setScale(0.75) // Масштабируем при необходимости
       .setAlpha(0);  // Изначально скрыта 
-
-    this.createMailIcon();
-
-    //----------------------------------------------------------------------
     //-------------------------- Текст "Язык" -----------------------------------
     const langText = this.texts[store.lang]?.langText || this.texts["en"]?.langText;
 
@@ -1939,27 +1969,25 @@ export default class GameScene extends Phaser.Scene {
     const inviteText = this.texts[store.lang]?.inviteText || this.texts["en"]?.inviteText;
     const playText = this.texts[store.lang]?.playText || this.texts["en"]?.playText;
 
-    const inviteTextBlock = this.add.text(this.inviteButton.x + this.inviteButton.width / 2, this.inviteButton.y + this.inviteButton.height / 2, (this.isSender || !id ? inviteText : playText), {
+    let inviteTextBlock: any = this.add.text(this.inviteButton.x + this.inviteButton.width / 2, this.inviteButton.y + this.inviteButton.height / 2, (this.isSender || !id ? inviteText : playText), {
       font: "36px BadComic-Regular",
       color: "#ffee27",
       align: "center"
     });
     inviteTextBlock.setOrigin(0.5, 0.5);
-    // Устанавливаем начальную прозрачность (яркость)
-    inviteTextBlock.setAlpha(0.9);
 
-    if (!this.isSender && this.opponentId) {
-      this.tweens.add({
-        targets: inviteTextBlock,
-        scaleX: 1.1, // Увеличение на 5%
-        scaleY: 1.1,
-        alpha: 1, // Увеличение яркости (если alpha < 1)
-        duration: 750, // Половина секунды для увеличения
-        yoyo: true, // Вернуть в исходное состояние
-        repeat: -1, // Зациклить анимацию
-        ease: "Sine.easeInOut" // Плавность анимации
-      });
-    }
+    if (!this.isSender && this.opponentId) { }
+
+    inviteTextTween = this.tweens.add({
+      targets: inviteTextBlock,
+      scaleX: 1.1, // Увеличение на 5%
+      scaleY: 1.1,
+      alpha: 1, // Увеличение яркости (если alpha < 1)
+      duration: 750, // Половина секунды для увеличения
+      yoyo: true, // Вернуть в исходное состояние
+      repeat: -1, // Зациклить анимацию
+      ease: "Sine.easeInOut" // Плавность анимации
+    });
 
     //-------------------------------------------------------------------------
     //-------------------------- Текст name -----------------------------------
@@ -1978,9 +2006,10 @@ export default class GameScene extends Phaser.Scene {
       color: "#f5ebdf",
     });
 
+
     // Кнопка взврата к списку игроков / отклонения приглашения
 
-    const backButton = this.add.sprite(popUp.x + 490, popUp.y + 340, Images.BACK_BUTTON)
+    const backButton = this.add.sprite(popUp.x + 470, popUp.y + 450, Images.BACK_BUTTON)
       .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
@@ -2023,9 +2052,13 @@ export default class GameScene extends Phaser.Scene {
 
       });
 
+    // Кнопка взврата к списку игроков / отклонения приглашения ----------------end----------
+
+    this.createSoundButton();
+
     this.profileContainer.add([
       popUp, this.inviteButton, this.mailIcon, inviteTextBlock, langTextBlock,
-      gamesTextBlock, victoryTextBlock, nameBlock, ratingTextBlock, backButton
+      gamesTextBlock, victoryTextBlock, nameBlock, ratingTextBlock, backButton/* , refusalTextBlock */
     ]);
 
     this.socket.off("roomDelete", this.handleRoomDelete);
@@ -2035,26 +2068,33 @@ export default class GameScene extends Phaser.Scene {
     this.socket.on("opponentDisconnected", this.handleOpponentDisconnected);
 
   }
-  createMailIcon() {
-    this.inviteButton.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      if (pointer.rightButtonDown()) {
-        return; // Игнорируем правую кнопку, ничего не делаем
-      }
-      this.mailIcon.setAlpha(1); // Показываем иконку
 
-      // Создаем анимацию перемещения и вращения
-      this.tweens.add({
-        targets: this.mailIcon,
-        x: this.inviteButton.x + this.inviteButton.width * 0.9, // Перемещение к 3/4 кнопки
-        angle: 360, // Один полный оборот
-        duration: 7500, // 3 секунды
-        ease: 'Linear',
-        repeat: -1, // Бесконечно повторять анимацию
-        onComplete: () => {
-          this.mailIcon.setAlpha(0);
+  createSoundButton() {
+    let data: string = localStorage.getItem('isSoundEnable');
+    this.soundButton = new Button(
+      this,
+      this.cameras.main.centerX - 205,
+      this.cameras.main.centerY + 265,
+      null,
+      null,
+      '#d9d9e6',
+      Images.BUTTON_SOUND,
+      'BadComic-Regular',
+      20,
+      data === 'true' ? '' : '         X',
+      () => {
+        if (store.isMusicEnabled) {
+          this.game.sound.pauseAll();
+          localStorage.setItem('isSoundEnable', 'false');
+        } else {
+          this.game.sound.resumeAll();
+          localStorage.setItem('isSoundEnable', 'true');
         }
-      });
-    });
+        store.isMusicEnabled = !store.isMusicEnabled;
+        this.soundButton.container.destroy();
+        this.createSoundButton();
+      }
+    );
   }
 
   // Универсальная функция очистки контейнера
