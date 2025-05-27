@@ -85,8 +85,6 @@ export default class GameScene extends Phaser.Scene {
   isSender: boolean = false;
   isYourTurn: boolean;
   isAuthorizationDialog: boolean = false;
-  isBackButtonPressed: boolean = false;
-
   lastMove: number | null = null;
   isGameSession: boolean = false;
   isGameFinished: boolean = false;
@@ -108,10 +106,8 @@ export default class GameScene extends Phaser.Scene {
   mailIcon: any;
   connectionOverlay: any | null = null;
   connectionUI: any;
-  buttonExitPressed: boolean = false;
-
   exitFromGamePopUp: any | null = null;
-  refereeBtn: any | null = null;
+  refereeImage: any | null = null;
   continueGameButton: Button | null = null;
   readyToLoseTextBlock: any | null = null;
   soundButton: Button;
@@ -172,6 +168,7 @@ export default class GameScene extends Phaser.Scene {
       this.startGameForTwo()
     }
     else if (store.isGameOnline) this.startGameOnline();
+
   }
 
   async setPlayerRating() {
@@ -416,7 +413,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async startGameOnline() {
-    //console.log('this.buttonExitPressed: ', this.buttonExitPressed)
 
     this.setPlayerRating();
     this.setStars();
@@ -801,9 +797,9 @@ export default class GameScene extends Phaser.Scene {
       anotherGameTextBlock.setOrigin(0.5, 0.5);
     }
 
-    const refereeBtn = this.add.sprite(popUp.x + 5, popUp.y + 240,
+    const refereeImage = this.add.sprite(popUp.x + 5, popUp.y + 240,
       Images.AMATEUR).setOrigin(0, 0);
-    refereeBtn.setScale(0.8);
+    refereeImage.setScale(0.8);
 
     const yesText = this.texts[store.lang]?.yesText || this.texts["en"]?.yesText
 
@@ -958,6 +954,7 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  //Для выхода из игрового процесса
   createButtonExit() {
     if (store.isForTwo) { }
     this.add.sprite(this.timeBar.x + 250, this.timeBar.y, Images.CANCEL)
@@ -983,9 +980,9 @@ export default class GameScene extends Phaser.Scene {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
         console.log('ButtonCancal нажата!!!');
-        this.clearProfileContainer();
         this.handleCancal();
       })
+
   }
 
   actionButtonConfirm() {
@@ -1121,7 +1118,7 @@ export default class GameScene extends Phaser.Scene {
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
-
+        console.log('this.backButton нажата!!!');
         this.handleCancal();
       })
 
@@ -1224,17 +1221,16 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`isRoom: ${this.isRoom} `); // false
     // console.log(`this.starsNumber: ${this.starsNumber} `);
     // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
-    // console.log('this.profileContainer: ', this.profileContainer);
+     console.log('this.profileContainer: ', this.profileContainer);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
 
     if (!this.isRoom && !this.isGameSession && !this.GA.isFinish
-      && !this.isAuthorizationDialog && (this.profileContainer == null || this.isSender == true)) {
+      && !this.isAuthorizationDialog && this.profileContainer == null) {
 
       // Сохраняем последний список игроков
-      if (!this.isSender) {
-        this.clearProfileContainer(); // Очищаем профиль
-      }
+      if (!this.isSender) {}
+        this.clearProfileContainer(); // Очищаем профиль      
 
       this.sortedPlayersArray = playersList.sort((a, b) => b.rating - a.rating);
 
@@ -1520,20 +1516,18 @@ export default class GameScene extends Phaser.Scene {
       //this.createMailIcon();
     } else {
       setTimeout(() => {
-        if (!this.isBackButtonPressed) {
-          this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
-          this.socket.emit("requestPlayers");
-          this.scene.restart();
-          setTimeout(() => {
-            this.createTimeBar();
-            this.createTimer();
-            this.chooseRival();
-            this.isExpert = true;// Выбираем эксперта
-            this.opponentExists = true;
-          }, 100);
-        }
-      }, 5000);
-      this.isBackButtonPressed = false;
+        this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
+        this.socket.emit("requestPlayers");
+        this.scene.restart();
+        setTimeout(() => {
+          this.createTimeBar();
+          this.createTimer();
+          this.chooseRival();
+          this.isExpert = true;// Выбираем эксперта
+          this.opponentExists = true;
+        }, 100);
+
+      }, 5000);      
     }
   }
 
@@ -1696,12 +1690,13 @@ export default class GameScene extends Phaser.Scene {
   }
   //======== Отслеживание подключения === end ===============================
 
+  // Выход из игрового процесса
   handleExit() {
     console.log('this.isGameSession: ', this.isGameSession)
 
-    this.buttonExitPressed = true;
-
-    if (store.isForTwo || !store.isForTwo && this.GA.moveStorage.length < 2) {
+    if ((store.isForTwo || store.isVsComputer) && this.GA.moveStorage.length < 2) {
+      this.scene.start("Start");
+    } else if (!store.isForTwo && this.GA.moveStorage.length < 2) {
       if (store.isGameOnline) {
         if (this.socket) {
           this.socket.emit("playerExit");
@@ -1710,12 +1705,13 @@ export default class GameScene extends Phaser.Scene {
           this.deleteControlPanele();
           this.socket = null;
           this.clearUserRoom();
-        }
-        console.log("Игрок вышел из игры");
-      }
-      this.scene.start("Start");
 
-    } else if (this.GA.moveStorage.length > 1
+          console.log("Игрок вышел из игры");
+          this.scene.start("Start");
+        }
+      }
+
+    } else if (!store.isForTwo && this.GA.moveStorage.length > 1
       && this.GA.moveStorage.length < 100
       && this.exitFromGamePopUp == null
       && (store.isYouX && this.GA.moveStorage.length % 2 == 0
@@ -1726,11 +1722,11 @@ export default class GameScene extends Phaser.Scene {
         Images.POPUP).setOrigin(0, 0)
         .setAlpha(0.95);
 
-      this.refereeBtn = this.add.sprite(this.exitFromGamePopUp.x + 5, this.exitFromGamePopUp.y + 240,
+      this.refereeImage = this.add.sprite(this.exitFromGamePopUp.x + 5, this.exitFromGamePopUp.y + 240,
         Images.AMATEUR).setOrigin(0, 0);
-      this.refereeBtn.setScale(0.8);
+      this.refereeImage.setScale(0.8);
 
-      console.log('this.refereeBtn :', this.refereeBtn);
+      console.log('this.refereeImage :', this.refereeImage);
       const exitWarningText = this.texts[store.lang]?.exitWarningText || this.texts["en"]?.exitWarningText
 
       this.readyToLoseTextBlock = this.add.text(this.exitFromGamePopUp.x + 300, this.exitFromGamePopUp.y + 135,
@@ -1759,10 +1755,9 @@ export default class GameScene extends Phaser.Scene {
           this.clearExitElements();
         })
 
-    } else if (this.buttonExitPressed && (store.isYouX && this.GA.moveStorage.length % 2 == 0
+    } else if (store.isYouX && this.GA.moveStorage.length % 2 == 0
       || !store.isYouX && this.GA.moveStorage.length % 2 != 0
-    )) {
-      this.buttonExitPressed = false;
+    ) {
       this.createEndSession();
 
       this.clearExitElements();
@@ -1794,9 +1789,9 @@ export default class GameScene extends Phaser.Scene {
       this.exitFromGamePopUp = null;
     }
 
-    if (this.refereeBtn) {
-      this.refereeBtn.destroy();
-      this.refereeBtn = null;
+    if (this.refereeImage) {
+      this.refereeImage.destroy();
+      this.refereeImage = null;
     }
 
     if (this.readyToLoseTextBlock) {
@@ -1811,11 +1806,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   handleCancal() {
-    if (!store.isForTwo && this.GA.moveStorage.length > 1
-      && (this.GA.moveStorage.length < 100)) {
-      this.gameResult = 0;
-      this.calculateRating(this.gameResult);
-    }
     if (this.socket) {
       if (this.isPopUpCheckStars) {
         this.scene.start("Game");
@@ -1843,7 +1833,6 @@ export default class GameScene extends Phaser.Scene {
 
     this.sys.game.device.os.desktop ? this.rivalName = name : this.rivalName = rivalNameText;
     this.rivalRating = rating;
-    // let isInviteButtonPressed: boolean = false;
 
     let inviteTextTween: any;
 
@@ -2016,7 +2005,9 @@ export default class GameScene extends Phaser.Scene {
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
-        this.isBackButtonPressed = true;
+        this.soundButton.container ? this.soundButton.container.destroy() : 1;
+
+        this.clearProfileContainer();
         console.log({ roomId: this.privateRoomId });
         console.log('backButton нажата!!!')
         console.log('this.isRoom', this.isRoom)
@@ -2025,7 +2016,6 @@ export default class GameScene extends Phaser.Scene {
         } else {
           this.scene.start("Game")
         }
-        this.clearProfileContainer();
 
         // Уведомляем сервер, что игроки снова доступны
         if (this.starsNumber > 0) {
@@ -2058,7 +2048,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.profileContainer.add([
       popUp, this.inviteButton, this.mailIcon, inviteTextBlock, langTextBlock,
-      gamesTextBlock, victoryTextBlock, nameBlock, ratingTextBlock, backButton/* , refusalTextBlock */
+      gamesTextBlock, victoryTextBlock, nameBlock, ratingTextBlock, backButton
     ]);
 
     this.socket.off("roomDelete", this.handleRoomDelete);

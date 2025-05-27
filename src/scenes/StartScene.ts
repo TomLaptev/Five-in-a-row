@@ -137,7 +137,7 @@ export class StartScene extends Phaser.Scene {
     gameNameText.setOrigin(0.5, 0.5);
   }
 
-  createButtonLater() {
+  createLogInLater() {
     this.add.sprite(this.cameras.main.centerX + 250,
       this.cameras.main.centerY - 240, Images.CANCEL)
       .setOrigin(0, 0)
@@ -220,7 +220,7 @@ export class StartScene extends Phaser.Scene {
         this.createLogIn();
 
         //Отказ от  авторизации	
-        this.createButtonLater()
+        this.createLogInLater()
 
       }
     );

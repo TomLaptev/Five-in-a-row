@@ -65,7 +65,7 @@ export const Source: any = {
 	cellWidth: 40,
 	cellHeight: 40,
 	delay: 250,
-	timeForGame: 240
+	timeForGame: 300
 };
 
 
