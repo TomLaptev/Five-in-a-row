@@ -131,7 +131,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
+
+    (window as any).ysdk?.features?.GameplayAPI?.stop?.(); 
+
     store.gameData = await (window as any).player.getData();
     console.log("store.gameData:", store.gameData);
 
@@ -145,11 +147,13 @@ export default class GameScene extends Phaser.Scene {
     this.GA = new GameAlgoritm(this);
     this.texts = this.cache.json.get("texts");
 
+
     this.input.on('pointerdown', () => {
       if (store.isMusicEnabled) {
         this.game.sound.resumeAll();
       }
     });
+
 
     this.isPopUpCheckStars = false;
     this.timeReserve = true;
@@ -710,6 +714,9 @@ export default class GameScene extends Phaser.Scene {
     this.lastMove = null;
 
     this.Timer.destroy();
+
+    console.log(this.isTimerOn);
+ 
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     this.textForMove ? this.textForMove.destroy() : 1;
@@ -994,22 +1001,21 @@ export default class GameScene extends Phaser.Scene {
 
     console.log('this.socket:', this.socket);
     console.log('this.opponentId:', this.opponentId);
+    if (this.socket) {
+      this.socket.emit("updatePlayersStatus", {
+        id: this.socket.id,
+        opponentSocketId: this.socket.id,
+        available: this.starsNumber > 0 ? true : false,
+        rating: this.playerRating
+      });
+      this.socket.emit("requestPlayers");
+      
+      this.socket.emit("refusalPlay", {
+        opponentId: this.socket.id, roomId: this.privateRoomId
+      });
+    }
     this.scene.restart();
-    setTimeout(() => {
-      if (this.socket) {
-        this.socket.emit("updatePlayersStatus", {
-          id: this.socket.id,
-          opponentSocketId: this.socket.id,
-          available: this.starsNumber > 0 ? true : false,
-          rating: this.playerRating
-        });
-        this.socket.emit("requestPlayers");
-
-        this.socket.emit("refusalPlay", {
-          opponentId: this.socket.id, roomId: this.privateRoomId
-        });
-      }
-    }, 200)
+    
   }
 
   createSymbol_0() {
@@ -1868,7 +1874,7 @@ export default class GameScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
 
-          (window as any).ysdk.features.GameplayAPI.start();
+          (window as any).ysdk.features?.GameplayAPI?.start?.();
           if (pointer.rightButtonDown()) {
             return; // Игнорируем правую кнопку, ничего не делаем
           }
