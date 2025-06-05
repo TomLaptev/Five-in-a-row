@@ -18,9 +18,7 @@ export class BootScene extends Phaser.Scene {
         (window as any).ysdk = ysdk;
 
         //Получение языка через SDK
-        store.lang = ysdk.environment.i18n.lang;;
-        //console.log('Язык из SDK:', store.lang);
-
+        store.lang = ysdk.environment.i18n.lang;
         return ysdk
       })
   }
@@ -59,7 +57,7 @@ export class BootScene extends Phaser.Scene {
     );
     this.load.pack('preload', './assets/pack.json', 'preload');
 
-    const YaSdk = await this.initSDK();
+    const YaSdk = await this.initSDK();// Ждем SDK.
     (window as any).ysdk = YaSdk;
     (window as any).player = await (window as any).ysdk.getPlayer();
     //console.log((window as any).player);
@@ -111,7 +109,6 @@ export class BootScene extends Phaser.Scene {
   }
 
   async create() {
-
     this.texts = this.cache.json.get("texts");
 
     new SoundManager(this);
@@ -125,19 +122,18 @@ export class BootScene extends Phaser.Scene {
     }
 
     document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    console.log('Страница скрыта');
-    this.game.sound.pauseAll();
-  } else if (document.visibilityState === 'visible') {
-    console.log('Страница снова видима');
-    if (store.isMusicEnabled) {
-      this.game.sound.resumeAll();
-    }
-  } 
-});
+      if (document.visibilityState === 'hidden') {
+        console.log('Страница скрыта');
+        this.game.sound.pauseAll();
+      } else if (document.visibilityState === 'visible') {
+        console.log('Страница снова видима');
+        if (store.isMusicEnabled) {
+          this.game.sound.resumeAll();
+        }
+      }
+    });
 
-
-    await this.initSDK(); // Ждем SDK.
+   // await this.initSDK(); // Ждем SDK.
     // Сообщаем платформе, что игра загрузилась и можно начинать играть.
     if ((window as any).ysdk?.features?.LoadingAPI?.ready) {
       (window as any).ysdk.features.LoadingAPI.ready();

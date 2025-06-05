@@ -30,7 +30,7 @@ export class StartScene extends Phaser.Scene {
   }
 
  create() {
-    store.lang = 'ru';
+    //store.lang = 'ru';
     this.texts = this.cache.json.get("texts");
 
     this.createBackground();
@@ -38,7 +38,7 @@ export class StartScene extends Phaser.Scene {
     this.createNameGame();
 
     this.createSoundButton();
-    this.input.on('pointerdown', () => {
+    this.input.once('pointerdown', () => {
   if (store.isMusicEnabled) {
     this.game.sound.resumeAll();
   }

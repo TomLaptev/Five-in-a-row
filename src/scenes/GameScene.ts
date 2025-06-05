@@ -90,7 +90,6 @@ export default class GameScene extends Phaser.Scene {
   isGameFinished: boolean = false;
   difficultySelection: any;
   numberGames: number = 0;
-  isOnlineStarting: boolean;
   numberVictories: number = 0;
   socket: Socket | null = null;
   isRoomInvitation: boolean;
@@ -112,8 +111,6 @@ export default class GameScene extends Phaser.Scene {
   readyToLoseTextBlock: any | null = null;
   soundButton: Button;
 
-
-
   constructor() {
     super("Game");
     this.handleUpdatePlayers = this.handleUpdatePlayers.bind(this); // Привязываем один раз
@@ -131,7 +128,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-
     (window as any).ysdk?.features?.GameplayAPI?.stop?.(); 
 
     store.gameData = await (window as any).player.getData();
@@ -140,20 +136,16 @@ export default class GameScene extends Phaser.Scene {
     this.games = store.gameData.games === undefined ? 0 : store.gameData.games;
     this.wins = store.gameData.wins === undefined ? 0 : store.gameData.wins;
 
-    //console.log('this.games :', this.games);
-    //console.log('this.wins :', this.wins);
-
     this.BOARD = new Board(this);
     this.GA = new GameAlgoritm(this);
     this.texts = this.cache.json.get("texts");
 
-
-    this.input.on('pointerdown', () => {
+    this.input.once('pointerdown', () => {
       if (store.isMusicEnabled) {
         this.game.sound.resumeAll();
       }
-    });
 
+    });
 
     this.isPopUpCheckStars = false;
     this.timeReserve = true;
@@ -185,7 +177,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   setStars() {
-    this.isOnlineStarting = false;
     if (!this.games) {
       this.starsNumber = this.prizeStarNumber;
     } else if (+localStorage.getItem('stars') > 0) {
@@ -292,6 +283,8 @@ export default class GameScene extends Phaser.Scene {
 
     //Возврат на стартовую сцену		
     this.createButtonCancal();
+
+    this.timeMask.x = -this.timeMask.displayWidth
 
     const popUpContainer = this.add.container(this.cameras.main.centerX - 300, this.cameras.main.centerY - 240);//для отображения на дисплее
 
@@ -1426,12 +1419,6 @@ export default class GameScene extends Phaser.Scene {
 
       if (roomData.status === "playing") {
         this.isGameFinished = false;
-        //console.log('this.isGameFinished: ', this.isGameFinished)
-
-        if (roomData.lastMove && !this.isOnlineStarting) {
-          // console.log(roomData.lastMove);
-          this.isOnlineStarting = true;
-        }
 
         this.opponentExists = true;
         this.isGameSession = true;
@@ -1442,9 +1429,6 @@ export default class GameScene extends Phaser.Scene {
         && this.isGameSession) {
         this.GA.onCellClicked(this.cells[roomData.lastMove]);
       }
-
-      // console.log('this.opponentExists: ', this.opponentExists)
-      // console.log(`this.starsNumber: ${this.starsNumber} `);
     }
   }
 
