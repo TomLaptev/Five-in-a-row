@@ -1187,11 +1187,8 @@ export default class GameScene extends Phaser.Scene {
 
     const playersRoomText = this.texts[store.lang]?.playersRoomText || this.texts["en"]?.playersRoomText;
     const roomName = this.add
-      .sprite(
-        this.cameras.main.centerX - 215,
-        this.cameras.main.centerY - 360,
-        Images.ROOM_NAME
-      ).setOrigin(0, 0);
+      .sprite(5, -85, Images.ROOM_NAME)
+      .setOrigin(0, 0);
     const roomNameText = this.add.text(roomName.x + roomName.width / 2, roomName.y + roomName.height * 0.9 / 2, playersRoomText,
       {
         font: "32px BadComic-Regular",
@@ -1199,6 +1196,8 @@ export default class GameScene extends Phaser.Scene {
         align: "center"
       });
     roomNameText.setOrigin(0.5, 0.5);
+
+    this.playersContainer.add([roomName, roomNameText]);
   }
 
   deleteControlPanele() {
@@ -1241,7 +1240,7 @@ export default class GameScene extends Phaser.Scene {
       if (!this.isSender) {
         this.clearProfileContainer(); // Очищаем профиль 
       }
-      
+
       this.sortedPlayersArray = playersList.sort((a, b) => b.rating - a.rating);
 
       //========== Проверка кандидата на онлайн ====================================
@@ -1520,7 +1519,11 @@ export default class GameScene extends Phaser.Scene {
         this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
         this.socket.emit("requestPlayers");
         this.scene.restart();
+
         setTimeout(() => {
+          console.log(111);
+          this.deleteControlPanele();
+          this.deletePlayersContainer();
           this.createTimeBar();
           this.createTimer();
           this.chooseRival();
