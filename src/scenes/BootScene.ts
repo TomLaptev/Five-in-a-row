@@ -133,8 +133,24 @@ export class BootScene extends Phaser.Scene {
       }
     });
 
-   // await this.initSDK(); // Ждем SDK.
-    // Сообщаем платформе, что игра загрузилась и можно начинать играть.
+    window.addEventListener('blur', () => {
+      console.log('Окно потеряло фокус');
+      this.game.sound.pauseAll();
+    });
+
+    window.addEventListener('focus', () => {
+      console.log('Окно снова в фокусе');
+      if (store.isMusicEnabled) {
+        if (this.game.sound.locked) {
+          this.input.once('pointerdown', () => {
+            this.game.sound.resumeAll();
+          });
+        } else {
+          this.game.sound.resumeAll();
+        }
+      }
+    });
+
     if ((window as any).ysdk?.features?.LoadingAPI?.ready) {
       (window as any).ysdk.features.LoadingAPI.ready();
     }

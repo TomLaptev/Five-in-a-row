@@ -244,6 +244,9 @@ export default class GameScene extends Phaser.Scene {
             callbacks: {
               onOpen: () => {
                 this.game.sound.pauseAll();
+
+                // Принудительно отключаем звук (временно)
+                this.game.sound.mute = true;
                 console.log('Video ad open.');
               },
               onRewarded: () => {
@@ -259,6 +262,7 @@ export default class GameScene extends Phaser.Scene {
                   this.socket.emit("requestPlayers");
                 }
                 this.scene.start("Game");
+                this.game.sound.mute = false;
 
               },
               onError: (e: any) => {
@@ -823,10 +827,14 @@ export default class GameScene extends Phaser.Scene {
               onClose: (wasShown: boolean) => {
                 console.log("============ closed =====");
                 this.actionButtonConfirm();
+                this.game.sound.mute = false;
               },
               onOpen: (opened: boolean) => {
                 console.log("===== OPENED!!! =====");
                 this.game.sound.pauseAll();
+
+                // Принудительно отключаем звук (временно)
+                this.game.sound.mute = true;
               },
               onError: function (error: boolean) {
                 // some action on error
@@ -985,7 +993,7 @@ export default class GameScene extends Phaser.Scene {
 
   }
 
-  actionButtonConfirm() {
+ actionButtonConfirm() {
     this.isSender = false;
     this.clearProfileContainer();
     this.isGameSession = false;
@@ -994,21 +1002,23 @@ export default class GameScene extends Phaser.Scene {
 
     console.log('this.socket:', this.socket);
     console.log('this.opponentId:', this.opponentId);
-    if (this.socket) {
-      this.socket.emit("updatePlayersStatus", {
-        id: this.socket.id,
-        opponentSocketId: this.socket.id,
-        available: this.starsNumber > 0 ? true : false,
-        rating: this.playerRating
-      });
-      this.socket.emit("requestPlayers");
-      
-      this.socket.emit("refusalPlay", {
-        opponentId: this.socket.id, roomId: this.privateRoomId
-      });
-    }
     this.scene.restart();
-    
+    setTimeout(() => {
+      if (this.socket) {
+        this.socket.emit("updatePlayersStatus", {
+          id: this.socket.id,
+          opponentSocketId: this.socket.id,
+          available: this.starsNumber > 0 ? true : false,
+          rating: this.playerRating
+        });
+
+        this.socket.emit("refusalPlay", {
+          opponentId: this.socket.id, roomId: this.privateRoomId
+        });
+        this.socket.emit("requestPlayers");
+      }
+    }, 200)
+
   }
 
   createSymbol_0() {
@@ -1228,7 +1238,7 @@ export default class GameScene extends Phaser.Scene {
       && !this.isAuthorizationDialog && this.profileContainer == null) {
 
       // Сохраняем последний список игроков
-      if (!this.isSender) {}
+     // if (!this.isSender) {}
         this.clearProfileContainer(); // Очищаем профиль      
 
       this.sortedPlayersArray = playersList.sort((a, b) => b.rating - a.rating);
@@ -2104,7 +2114,7 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`isRoom: ${this.isRoom} `); //true
     // console.log(`isGameFinished: ${this.isGameFinished} `); //false
 
-    if (!this.isGameSession) {
+    if (!this.isGameSession && this.isRoom) {
       this.actionButtonConfirm();
     }
 

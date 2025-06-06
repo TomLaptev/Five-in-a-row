@@ -29,7 +29,7 @@ export class StartScene extends Phaser.Scene {
     this.load.json("texts", "assets/texts.json");
   }
 
- create() {
+  create() {
     //store.lang = 'ru';
     this.texts = this.cache.json.get("texts");
 
@@ -39,10 +39,10 @@ export class StartScene extends Phaser.Scene {
 
     this.createSoundButton();
     this.input.once('pointerdown', () => {
-  if (store.isMusicEnabled) {
-    this.game.sound.resumeAll();
-  }
-});
+      if (store.isMusicEnabled) {
+        this.game.sound.resumeAll();
+      }
+    });
 
     this.createWinnersButton();
 
@@ -271,10 +271,14 @@ export class StartScene extends Phaser.Scene {
               onClose: (wasShown: boolean) => {
                 console.log("============ closed =====");
                 this.scene.start("Game");
+                this.game.sound.mute = false;
               },
               onOpen: (opened: boolean) => {
                 console.log("===== OPENED!!! =====");
                 this.game.sound.pauseAll();
+
+                // Принудительно отключаем звук (временно)
+                this.game.sound.mute = true;
               },
               onError: function (error: boolean) {
                 // some action on error
@@ -323,10 +327,15 @@ export class StartScene extends Phaser.Scene {
                 console.log("============ closed =====");
                 store.isGameOnline = true;
                 this.scene.start("Game");
+                this.game.sound.mute = false;
+                
               },
               onOpen: (opened: boolean) => {
                 console.log("===== OPENED!!! =====");
                 this.game.sound.pauseAll();
+
+                // Принудительно отключаем звук (временно)
+                this.game.sound.mute = true;
               },
               onError: function (error: boolean) {
                 // some action on error
