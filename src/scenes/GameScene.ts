@@ -1236,6 +1236,8 @@ export default class GameScene extends Phaser.Scene {
     if (!this.isRoom && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
 
+      (window as any).ysdk?.features?.GameplayAPI?.stop?.();
+
       // Сохраняем последний список игроков
       if (!this.isSender) {
         this.clearProfileContainer(); // Очищаем профиль 
@@ -1465,6 +1467,7 @@ export default class GameScene extends Phaser.Scene {
         this.clearUserRoom();
         this.socket.emit("updatePlayersStatus", { id: this.socket.id, available: this.starsNumber > 0 ? true : false, rating: this.playerRating });
         this.socket.emit("requestPlayers"); // Запрос списка активных игроков
+
       } else if (!this.isRoom) {
         this.socket.emit("requestPlayers"); // Запрос списка активных игроков
       } else if (this.isGameSession && this.isRoom && !this.isNewbie) {
@@ -1521,7 +1524,7 @@ export default class GameScene extends Phaser.Scene {
         this.scene.restart();
 
         setTimeout(() => {
-          console.log(111);
+          //console.log(111);
           this.deleteControlPanele();
           this.deletePlayersContainer();
           this.createTimeBar();
