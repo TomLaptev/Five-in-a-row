@@ -128,7 +128,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    (window as any).ysdk?.features?.GameplayAPI?.stop?.(); 
+    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     store.gameData = await (window as any).player.getData();
     console.log("store.gameData:", store.gameData);
@@ -713,7 +713,7 @@ export default class GameScene extends Phaser.Scene {
     this.Timer.destroy();
 
     console.log(this.isTimerOn);
- 
+
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     this.textForMove ? this.textForMove.destroy() : 1;
@@ -993,7 +993,7 @@ export default class GameScene extends Phaser.Scene {
 
   }
 
- actionButtonConfirm() {
+  actionButtonConfirm() {
     this.isSender = false;
     this.clearProfileContainer();
     this.isGameSession = false;
@@ -1224,23 +1224,24 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
-    // console.log(`isGameSession: ${this.isGameSession} `); //false
-    // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
-    // console.log(`this.isSender: ${this.isSender} `); //false
-    // console.log(`isRoom: ${this.isRoom} `); // false
-    // console.log(`this.starsNumber: ${this.starsNumber} `);
-    // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
-     console.log('this.profileContainer: ', this.profileContainer);
+    console.log(`isGameSession: ${this.isGameSession} `); //false
+    console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
+    console.log(`this.isSender: ${this.isSender} `); //false
+    console.log(`isRoom: ${this.isRoom} `); // false
+    console.log(`this.starsNumber: ${this.starsNumber} `);
+    console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
+    console.log('this.profileContainer: ', this.profileContainer);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
 
     if (!this.isRoom && !this.isGameSession && !this.GA.isFinish
-      && !this.isAuthorizationDialog && this.profileContainer == null) {
+      && !this.isAuthorizationDialog) {
 
       // Сохраняем последний список игроков
-     // if (!this.isSender) {}
-        this.clearProfileContainer(); // Очищаем профиль      
-
+      if (!this.isSender) {
+        this.clearProfileContainer(); // Очищаем профиль 
+      }
+      
       this.sortedPlayersArray = playersList.sort((a, b) => b.rating - a.rating);
 
       //========== Проверка кандидата на онлайн ====================================
@@ -1527,7 +1528,7 @@ export default class GameScene extends Phaser.Scene {
           this.opponentExists = true;
         }, 100);
 
-      }, 5000);      
+      }, 5000);
     }
   }
 
@@ -2005,7 +2006,6 @@ export default class GameScene extends Phaser.Scene {
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
-        this.soundButton.container ? this.soundButton.container.destroy() : 1;
 
         this.clearProfileContainer();
         console.log({ roomId: this.privateRoomId });
@@ -2101,6 +2101,10 @@ export default class GameScene extends Phaser.Scene {
       this.profileContainer.removeAll(true);
       this.profileContainer.destroy(true);
       this.profileContainer = null;
+    }
+
+    if (this.soundButton) {
+      this.soundButton.container.destroy();
     }
   }
 
