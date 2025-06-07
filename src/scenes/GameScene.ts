@@ -1223,17 +1223,18 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
-    console.log(`isGameSession: ${this.isGameSession} `); //false
-    console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
-    console.log(`this.isSender: ${this.isSender} `); //false
-    console.log(`isRoom: ${this.isRoom} `); // false
-    console.log(`this.starsNumber: ${this.starsNumber} `);
-    console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
-    console.log('this.profileContainer: ', this.profileContainer);
+    // console.log(`isGameSession: ${this.isGameSession} `); //false
+    // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
+    // console.log(`this.isSender: ${this.isSender} `); //false
+    // console.log(`isRoom: ${this.isRoom} `); // false
+    // console.log(`this.starsNumber: ${this.starsNumber} `);
+    // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
+    // console.log('this.profileContainer: ', this.profileContainer);
+    console.log('this.isExpert: ', this.isExpert);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
 
-    if (!this.isRoom && !this.isGameSession && !this.GA.isFinish
+    if (!this.isRoom && !this.isExpert && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
 
       (window as any).ysdk?.features?.GameplayAPI?.stop?.();
@@ -1296,6 +1297,7 @@ export default class GameScene extends Phaser.Scene {
         }
         if (this.starsNumber) {
           this.сreateProfile('', store.lang, expertText, 1400, '', '> 1000', '> 1000');
+         this.isSender = true;  
         } else if (this.starsNumber <= 0) {
           this.deleteControlPanele();
           this.deletePlayersContainer();
@@ -1519,11 +1521,13 @@ export default class GameScene extends Phaser.Scene {
       //this.createMailIcon();
     } else {
       setTimeout(() => {
+        console.log(`this.isSender: ${this.isSender} `);
         this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
         this.socket.emit("requestPlayers");
         this.scene.restart();
 
-        setTimeout(() => {
+        if (this.isSender) {
+           setTimeout(() => {
           //console.log(111);
           this.deleteControlPanele();
           this.deletePlayersContainer();
@@ -1533,6 +1537,7 @@ export default class GameScene extends Phaser.Scene {
           this.isExpert = true;// Выбираем эксперта
           this.opponentExists = true;
         }, 100);
+        }       
 
       }, 5000);
     }
@@ -1714,6 +1719,7 @@ export default class GameScene extends Phaser.Scene {
           this.clearUserRoom();
 
           console.log("Игрок вышел из игры");
+          this.isExpert = false;
           this.scene.start("Start");
         }
       }
@@ -1786,6 +1792,7 @@ export default class GameScene extends Phaser.Scene {
         this.socket = null;
         this.clearUserRoom();
         console.log("Игрок вышел из игры");
+        this.isExpert = false; 
       }
     }
   }
