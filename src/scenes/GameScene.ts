@@ -1297,7 +1297,19 @@ export default class GameScene extends Phaser.Scene {
         }
         if (this.starsNumber) {
           this.сreateProfile('', store.lang, expertText, 1400, '', '> 1000', '> 1000');
-         this.isSender = true;  
+          this.isSender = true;
+          this.isExpert = true;
+          // Обновляем состояние пользователя (available: false)
+          this.socket.emit("updatePlayersStatus", {
+            id: this.socket.id,
+            opponentSocketId: this.socket.id,
+            available: false,
+            rating: this.playerRating,
+          });
+          this.socket.emit("requestPlayers");
+          this.deleteControlPanele();
+          this.deletePlayersContainer();
+
         } else if (this.starsNumber <= 0) {
           this.deleteControlPanele();
           this.deletePlayersContainer();
@@ -1520,24 +1532,24 @@ export default class GameScene extends Phaser.Scene {
       this.socket.emit("requestPlayers");
       //this.createMailIcon();
     } else {
+      this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
+      this.socket.emit("requestPlayers");
+      
       setTimeout(() => {
-        console.log(`this.isSender: ${this.isSender} `);
-        this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
-        this.socket.emit("requestPlayers");
-        this.scene.restart();
+        console.log(`this.isExpert: ${this.isExpert} `);
 
-        if (this.isSender) {
-           setTimeout(() => {
-          //console.log(111);
-          this.deleteControlPanele();
-          this.deletePlayersContainer();
-          this.createTimeBar();
-          this.createTimer();
-          this.chooseRival();
-          this.isExpert = true;// Выбираем эксперта
-          this.opponentExists = true;
-        }, 100);
-        }       
+        if (this.isExpert) {
+          this.scene.restart();
+
+          setTimeout(() => {
+            console.log(`this.isSender: ${this.isSender} `);
+            this.deleteControlPanele();
+            this.deletePlayersContainer();
+            this.createTimeBar();
+            this.createTimer();
+            this.chooseRival();
+          }, 200);
+        }
 
       }, 5000);
     }
@@ -1792,7 +1804,7 @@ export default class GameScene extends Phaser.Scene {
         this.socket = null;
         this.clearUserRoom();
         console.log("Игрок вышел из игры");
-        this.isExpert = false; 
+        this.isExpert = false;
       }
     }
   }
@@ -2019,7 +2031,7 @@ export default class GameScene extends Phaser.Scene {
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
-
+        this.isExpert = false;
         this.clearProfileContainer();
         console.log({ roomId: this.privateRoomId });
         console.log('backButton нажата!!!')
