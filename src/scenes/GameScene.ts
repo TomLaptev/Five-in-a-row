@@ -1718,6 +1718,7 @@ export default class GameScene extends Phaser.Scene {
   // Выход из игрового процесса
   handleExit() {
     console.log('this.isGameSession: ', this.isGameSession)
+    this.isExpert = false;
 
     if ((store.isForTwo || store.isVsComputer) && this.GA.moveStorage.length < 2) {
       this.scene.start("Start");
@@ -1732,7 +1733,6 @@ export default class GameScene extends Phaser.Scene {
           this.clearUserRoom();
 
           console.log("Игрок вышел из игры");
-          this.isExpert = false;
           this.scene.start("Start");
         }
       }
