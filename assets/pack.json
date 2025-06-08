@@ -48,11 +48,6 @@
 			},
 			{
 				"type": "image",
-				"key": "refusalButton",
-				"url": "./assets/images/refusalButton.png"
-			},
-			{
-				"type": "image",
 				"key": "backButton",
 				"url": "./assets/images/backButton.png"
 			},

@@ -112,7 +112,7 @@ export class StartScene extends Phaser.Scene {
       36,
       yesText,
       async () => {
-        if ((window as any).player.getMode() === 'lite') {
+        if (!(window as any).player.isAuthorized()) {
           await (window as any).ysdk.auth.openAuthDialog().then(() => {
             this.scene.start("Boot");
           })

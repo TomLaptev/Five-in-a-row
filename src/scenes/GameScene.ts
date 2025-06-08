@@ -1052,13 +1052,13 @@ export default class GameScene extends Phaser.Scene {
           rating: this.playerRating
         });
       }
-
       if (store.isAuth) {
-        (window as any).ysdk.getLeaderboards().then(
-          (lb: any) => {
-            lb.setLeaderboardScore('mainLeaderboard', this.playerRating);
-          })
-      };
+        try {
+          await (window as any).ysdk.leaderboards.setScore('mainLeaderboard', this.playerRating);
+        } catch (e) {
+          console.error('Ошибка при установке очков в лидерборд', e);
+        }
+      }
       await (window as any).player.setData({
         games: this.games,
         wins: this.wins,
@@ -1167,7 +1167,7 @@ export default class GameScene extends Phaser.Scene {
         this.socket = null;
         this.isAuthorizationDialog = false;
 
-        if ((window as any).player.getMode() === 'lite') {
+        if (!(window as any).player.isAuthorized()) {
           await (window as any).ysdk.auth.openAuthDialog().then(() => {
             this.scene.start("Boot");
           })
@@ -1534,7 +1534,7 @@ export default class GameScene extends Phaser.Scene {
     } else {
       this.socket.emit("updatePlayersStatus", { id: this.socket.id, opponentSocketId: this.socket.id, available: false, rating: this.playerRating });
       this.socket.emit("requestPlayers");
-      
+
       setTimeout(() => {
         console.log(`this.isExpert: ${this.isExpert} `);
 
@@ -1548,6 +1548,7 @@ export default class GameScene extends Phaser.Scene {
             this.createTimeBar();
             this.createTimer();
             this.chooseRival();
+            this.opponentExists = true;
           }, 200);
         }
 

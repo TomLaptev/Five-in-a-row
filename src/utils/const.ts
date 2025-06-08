@@ -10,7 +10,6 @@ export enum Images {
 	BUTTON_BUSY_PLAYER = 'buttonBusyPlayer',		
 	BUTTON_FRAME = 'buttonFrame',		
 	INVITE_BUTTON = 'inviteButton',		
-	REFUSAL_BUTTON = 'refusalButton',		
 	BACK_BUTTON = 'backButton',		
 	BACK_BUTTON_LD = 'backButtonLd',		
 	INVITE = 'invite',		

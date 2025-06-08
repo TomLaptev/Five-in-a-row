@@ -80,30 +80,32 @@ export class BootScene extends Phaser.Scene {
 
     const playerNameText = this.texts[store.lang]?.playerNameText || this.texts["en"]?.playerNameText;
 
-    if ((window as any).player.getMode() === 'lite') {
-      store.playerName = playerNameText
-    } else {
+    if ((window as any).player.isAuthorized()) {
       store.isAuth = true;
-    }
-    try {
-      var lb: any;
-      await (window as any).ysdk.getLeaderboards().then((_lb: any) => lb = _lb);
-    } catch (e) {
-      console.log('лидерборд не инициализирован', e);
+    } else {
+      store.playerName = playerNameText
     }
 
-    if (store.isAuth) {
+  try {
+  const leaderboard = (window as any).ysdk.leaderboards;
+
+  if (store.isAuth) {
+    try {
+      await leaderboard.getPlayerEntry('mainLeaderboard');
+    } catch (e) {
+      console.warn('Игрока ещё нет в лидерборде, устанавливаю очки…');
       try {
-        await (window as any).ysdk.getLeaderboards().then(
-          (lb: any) => lb.getLeaderboardPlayerEntry('mainLeaderboard')
-        )
-      } catch (e) {
-        console.log('запрос LeaderboardPlayerEntry', e);
-        await (window as any).ysdk.getLeaderboards().then(
-          (lb: any) => lb.setLeaderboardScore('mainLeaderboard', 1100));
-        this.scene.start("Boot");
+        await leaderboard.setScore('mainLeaderboard', 1100);
+      } catch (setErr) {
+        console.error('Ошибка при установке очков', setErr);
       }
     }
+  }
+
+} catch (e) {
+  console.error('Ошибка инициализации лидерборда', e);
+}
+
 
     (window as any).ysdk.adv.showBannerAdv();
   }
