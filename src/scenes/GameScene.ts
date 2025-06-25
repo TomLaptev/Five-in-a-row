@@ -1076,7 +1076,6 @@ export default class GameScene extends Phaser.Scene {
 
   //=========== создание контейнера и комнаты игроков	=====================	
   createControlPanele() {
-    //const startScene = this.scene.get('Start') as StartScene;
     const loginText = this.texts[store.lang]?.loginText || this.texts["en"]?.loginText
     this.deleteControlPanele();
 
@@ -1666,9 +1665,9 @@ export default class GameScene extends Phaser.Scene {
     }).setOrigin(0.5);
     this.connectionUI.add(loadingTextBlock);
 
-    // Сообщение об ошибке + кнопка через 5 циклов (10 сек)
+    // Сообщение об ошибке + кнопка через 30 циклов (1 мин)
 
-    this.time.delayedCall(animationDuration * 5, () => {
+    this.time.delayedCall(animationDuration * 30, () => {
       if (this.socket == null || this.socket && this.socket.id == null) {
         //console.log('number: ', 123);
 

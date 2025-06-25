@@ -16,10 +16,7 @@ export class BootScene extends Phaser.Scene {
       .init()
       .then((ysdk: any) => {
         (window as any).ysdk = ysdk;
-
-        //Получение языка через SDK
-        store.lang = ysdk.environment.i18n.lang;
-        return ysdk
+        return ysdk;
       })
   }
 
@@ -58,7 +55,12 @@ export class BootScene extends Phaser.Scene {
     this.load.pack('preload', './assets/pack.json', 'preload');
 
     const YaSdk = await this.initSDK();// Ждем SDK.
+
     (window as any).ysdk = YaSdk;
+
+    store.lang = YaSdk.environment.i18n.lang;
+    console.log('Язык установлен:', store.lang);
+
     (window as any).player = await (window as any).ysdk.getPlayer();
     //console.log((window as any).player);
 
@@ -69,8 +71,6 @@ export class BootScene extends Phaser.Scene {
       store.avatarKey = "user"; // Сохраняем ключ загруженного изображения
     });
     this.load.start();
-
-    //console.log((window as any).player);
 
     store.id = await (window as any).player.getUniqueID().replace(/\//g, "0");
     // console.log(store.id);
@@ -86,25 +86,25 @@ export class BootScene extends Phaser.Scene {
       store.playerName = playerNameText
     }
 
-  try {
-  const leaderboard = (window as any).ysdk.leaderboards;
-
-  if (store.isAuth) {
     try {
-      await leaderboard.getPlayerEntry('mainLeaderboard');
-    } catch (e) {
-      console.warn('Игрока ещё нет в лидерборде, устанавливаю очки…');
-      try {
-        await leaderboard.setScore('mainLeaderboard', 1100);
-      } catch (setErr) {
-        console.error('Ошибка при установке очков', setErr);
-      }
-    }
-  }
+      const leaderboard = (window as any).ysdk.leaderboards;
 
-} catch (e) {
-  console.error('Ошибка инициализации лидерборда', e);
-}
+      if (store.isAuth) {
+        try {
+          await leaderboard.getPlayerEntry('mainLeaderboard');
+        } catch (e) {
+          console.warn('Игрока ещё нет в лидерборде, устанавливаю очки…');
+          try {
+            await leaderboard.setScore('mainLeaderboard', 1100);
+          } catch (setErr) {
+            console.error('Ошибка при установке очков', setErr);
+          }
+        }
+      }
+
+    } catch (e) {
+      console.error('Ошибка инициализации лидерборда', e);
+    }
 
 
     (window as any).ysdk.adv.showBannerAdv();
@@ -115,13 +115,7 @@ export class BootScene extends Phaser.Scene {
 
     new SoundManager(this);
 
-    localStorage.setItem('isSoundEnable', 'true');
-
-    if (store.isGameOnline) {
-      this.scene.start('Game');
-    } else {
-      this.scene.start('Start');
-    }
+    localStorage.setItem('isSoundEnable', 'true'); 
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
@@ -142,6 +136,7 @@ export class BootScene extends Phaser.Scene {
 
     window.addEventListener('focus', () => {
       console.log('Окно снова в фокусе');
+      
       if (store.isMusicEnabled) {
         if (this.game.sound.locked) {
           this.input.once('pointerdown', () => {
@@ -152,9 +147,23 @@ export class BootScene extends Phaser.Scene {
         }
       }
     });
-
+    
     if ((window as any).ysdk?.features?.LoadingAPI?.ready) {
-      (window as any).ysdk.features.LoadingAPI.ready();
+      try {
+        await (window as any).ysdk.features.LoadingAPI.ready();
+        console.log('[YSDK] LoadingAPI.ready() вызван успешно');
+      } catch (e) {
+        console.warn('[YSDK] LoadingAPI.ready() вызвал ошибку:', e);
+      }
+    } else {
+      console.warn('[YSDK] features.LoadingAPI не доступен.');
+    }
+
+
+    if (store.isGameOnline) {
+      this.scene.start('Game');
+    } else {
+      this.scene.start('Start');
     }
 
   }

@@ -1,6 +1,6 @@
 {
 	"ru": {
-		"playerNameText": "аноним",
+		"playerNameText": "Аноним",
 		"rivalNameText": "Соперник",
 
 		"gameName": "Пять в ряд, \noнлайн",
@@ -44,7 +44,7 @@
 		"leaderBoardText": "Таблица лидеров"
 	},
 	"en": {
-		"playerNameText": "anonimus",
+		"playerNameText": "Anonimus",
 		"rivalNameText": "Rival",
 
 		"gameName": "Five in a row, \nonline",
@@ -88,7 +88,7 @@
 		"leaderBoardText": "LiderBoard"
 	},
 	"fr": {
-		"playerNameText": "anonyme",
+		"playerNameText": "Anonyme",
 		"rivalNameText": "Rival",
 
 		"gameName": "Cinq d'affilée, \nen ligne",
@@ -132,7 +132,7 @@
 		"leaderBoardText": "Tableau des leaders"
 	},
 	"pt": {
-		"playerNameText": "anônimo",
+		"playerNameText": "Anônimo",
 		"rivalNameText": "Rival",
 
 		"gameName": "Cinco seguidas,  \non-line",
@@ -176,7 +176,7 @@
 		"leaderBoardText": "Tabela de Líderes"
 	},
 	"tr": {
-		"playerNameText": "anonim",
+		"playerNameText": "Anonim",
 		"rivalNameText": "Rakip",
 
 		"gameName": "Beş üst üste, \nçevrimiçi",
@@ -221,7 +221,7 @@
 	},
 	
 	"de": {
-		"playerNameText": "anonym",
+		"playerNameText": "Anonym",
 		"rivalNameText": "Rivale",
 
 		"gameName": "Fünf in einer Reihe,\nonline",
@@ -265,7 +265,7 @@
 		"leaderBoardText": "Die Bestenliste"
 	},
 	"es": {
-		"playerNameText": "anónimo",
+		"playerNameText": "Anónimo",
 		"rivalNameText": "Rival",
 
 		"gameName": "Cinco seguidos, \nen línea",

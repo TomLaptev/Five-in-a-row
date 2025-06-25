@@ -55,7 +55,7 @@ export class StartScene extends Phaser.Scene {
       store.isForTwo = false;
     }
 
-    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
+  (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
   };
 
