@@ -80,7 +80,6 @@ export default class GameScene extends Phaser.Scene {
   roomData: any;
   userRoomId: string | null = null;
   rivalRoomId: string;
-  isRoom: boolean = false;
   isRoomDeleted: boolean;
   isSender: boolean = false;
   isYourTurn: boolean;
@@ -128,6 +127,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
+    //  console.log('store.isRoom: ', store.isRoom);
+    // console.log('this.socket: ', this.socket);
+
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     store.gameData = await (window as any).player.getData();
@@ -418,9 +420,9 @@ export default class GameScene extends Phaser.Scene {
     this.setPlayerRating();
     this.setStars();
 
-    // console.log('this.isRoom: ', this.isRoom);
-    // console.log('this.socket: ', this.socket);
-    if (!this.isRoom) {
+    console.log('store.isRoom: ', store.isRoom);
+    console.log('this.socket: ', this.socket);
+    if (!store.isRoom) {
       if (!this.socket) {
         this.initSocket();
       }
@@ -712,7 +714,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.Timer.destroy();
 
-    console.log(this.isTimerOn);
+    console.log('this.isTimerOn: ', this.isTimerOn);
 
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
@@ -998,7 +1000,7 @@ export default class GameScene extends Phaser.Scene {
     this.clearProfileContainer();
     this.isGameSession = false;
     this.userRoomId = null;
-    this.isRoom = false;
+    store.isRoom = false;
 
     console.log('this.socket:', this.socket);
     console.log('this.opponentId:', this.opponentId);
@@ -1089,9 +1091,8 @@ export default class GameScene extends Phaser.Scene {
       async () => {
         if (store.isAuth) {
           try {
-            await (window as any).ysdk.getLeaderboards().then(
-              (lb: any) => lb.getLeaderboardEntries('mainLeaderboard', { quantityAround: 1, includeUser: true, quantityTop: 5 })
-                .then((res: any) => store.allPlayers = res))
+             await (window as any).ysdk.leaderboards.getEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
+                .then((res: any) => store.allPlayers = res)
           } catch (e) {
             console.log('запрос LeaderboardPlayerEntries', e);
           }
@@ -1225,15 +1226,15 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`isGameSession: ${this.isGameSession} `); //false
     // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
     // console.log(`this.isSender: ${this.isSender} `); //false
-    // console.log(`isRoom: ${this.isRoom} `); // false
+    // console.log(`store.isRoom: ${store.isRoom} `); // false
     // console.log(`this.starsNumber: ${this.starsNumber} `);
     // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
     // console.log('this.profileContainer: ', this.profileContainer);
-    console.log('this.isExpert: ', this.isExpert);
+   // console.log('this.isExpert: ', this.isExpert);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
 
-    if (!this.isRoom && !this.isExpert && !this.isGameSession && !this.GA.isFinish
+    if (!store.isRoom && !this.isExpert && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
 
       (window as any).ysdk?.features?.GameplayAPI?.stop?.();
@@ -1411,7 +1412,7 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`this.starsNumber: ${this.starsNumber} `);
     this.pagination.show();
     if (roomData) {
-      this.isRoom = true;
+      store.isRoom = true;
       this.roomData = true;
 
       // console.log("isYouX:", roomData.isYouX);
@@ -1471,7 +1472,7 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`isGameSession: ${this.isGameSession} `); //true
     // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
     // console.log(`opponentExists: ${this.opponentExists} `); //true
-    // console.log(`isRoom: ${this.isRoom} `); //true
+    // console.log(`store.isRoom: ${store.isRoom} `); //true
     // console.log(`isGameFinished: ${this.isGameFinished} `); //false
 
     if (!this.isGameFinished) {
@@ -1481,9 +1482,9 @@ export default class GameScene extends Phaser.Scene {
         this.socket.emit("updatePlayersStatus", { id: this.socket.id, available: this.starsNumber > 0 ? true : false, rating: this.playerRating });
         this.socket.emit("requestPlayers"); // Запрос списка активных игроков
 
-      } else if (!this.isRoom) {
+      } else if (!store.isRoom) {
         this.socket.emit("requestPlayers"); // Запрос списка активных игроков
-      } else if (this.isGameSession && this.isRoom && !this.isNewbie) {
+      } else if (this.isGameSession && store.isRoom && !this.isNewbie) {
         this.opponentExists = false;
         this.createEndSession();
       }
@@ -1932,9 +1933,9 @@ export default class GameScene extends Phaser.Scene {
 
           } else if (this.isSender) {
             this.sendGameInvite(id, name);
-            this.isRoom = true;
+            store.isRoom = true;
 
-          } else if (this.isRoom) {
+          } else if (store.isRoom) {
             console.log("Отправка обновления:", {
               roomId: this.rivalRoomId,
               opponentId: this.opponentId,
@@ -2035,8 +2036,8 @@ export default class GameScene extends Phaser.Scene {
         this.clearProfileContainer();
         console.log({ roomId: this.privateRoomId });
         console.log('backButton нажата!!!')
-        console.log('this.isRoom', this.isRoom)
-        if (this.isRoom) {
+        console.log('store.isRoom: ', store.isRoom)
+        if (store.isRoom) {
           this.socket.emit("refusalPlay", { opponentId: this.opponentId, roomId: this.privateRoomId });
         } else {
           this.scene.start("Game")
@@ -2060,7 +2061,7 @@ export default class GameScene extends Phaser.Scene {
         }
 
         this.isSender = false;
-        this.isRoom = false;
+        store.isRoom = false;
         this.userRoomId = null;
 
         this.socket.emit("requestPlayers");
@@ -2140,10 +2141,10 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`isGameSession: ${this.isGameSession} `); //true
     // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
     // console.log(`opponentExists: ${this.opponentExists} `); //true
-    // console.log(`isRoom: ${this.isRoom} `); //true
+    // console.log(`store.isRoom: ${store.isRoom} `); //true
     // console.log(`isGameFinished: ${this.isGameFinished} `); //false
 
-    if (!this.isGameSession && this.isRoom) {
+    if (!this.isGameSession && store.isRoom) {
       this.actionButtonConfirm();
     }
 
@@ -2159,7 +2160,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   clearUserRoom() {
-    this.isRoom = false; // Сбрасываем флаг комнаты
+    store.isRoom = false; // Сбрасываем флаг комнаты
     this.userRoomId = null; // Сбрасываем ID комнаты
     this.isSender = false;
     this.opponentExists = false;

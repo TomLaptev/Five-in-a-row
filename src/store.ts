@@ -20,6 +20,7 @@
     isForTwo: boolean;
     isGameOnline: boolean;
     isYouX: boolean;
+    isRoom: boolean;
 }
 
 const store: IStore = {
@@ -43,6 +44,7 @@ const store: IStore = {
     avatarKey: "",
     available: true,
     gameData: null,
+    isRoom: false,
 }
 
 export default store;

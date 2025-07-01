@@ -55,7 +55,7 @@ export class StartScene extends Phaser.Scene {
       store.isForTwo = false;
     }
 
-  (window as any).ysdk?.features?.GameplayAPI?.stop?.();
+    (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
   };
 
@@ -193,10 +193,10 @@ export class StartScene extends Phaser.Scene {
         this.playButton.container.destroy();
         if (store.isAuth) {
           try {
-            await (window as any).ysdk.getLeaderboards().then(
-              (lb: any) => lb.getLeaderboardEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
-                .then((res: any) => store.allPlayers = res))
-          } catch (e) {
+            await (window as any).ysdk.leaderboards.getEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
+              .then((res: any) => store.allPlayers = res)
+          }
+          catch (e) {
             console.log('запрос LeaderboardPlayerEntries', e);
           }
           this.scene.start('Leaders');
@@ -328,7 +328,7 @@ export class StartScene extends Phaser.Scene {
                 store.isGameOnline = true;
                 this.scene.start("Game");
                 this.game.sound.mute = false;
-                
+
               },
               onOpen: (opened: boolean) => {
                 console.log("===== OPENED!!! =====");

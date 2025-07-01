@@ -130,7 +130,10 @@ export class LeaderBoardScene extends Phaser.Scene {
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
-				store.isGameOnline ? this.scene.start("Game") : this.scene.start("Start");
+				if (store.isGameOnline) {
+          store.isRoom = false;
+          this.scene.start("Game")
+        } else this.scene.start("Start");
 			})
 	}
 
