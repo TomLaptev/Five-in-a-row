@@ -49,7 +49,6 @@ export class BootScene extends Phaser.Scene {
 
     window.addEventListener("contextmenu", (event) => event.preventDefault());
 
-
     // pass value to change the loading bar fill
     this.load.on(
       'progress',
@@ -93,7 +92,6 @@ export class BootScene extends Phaser.Scene {
     this.load.start();
 
     store.id = await (window as any).player.getUniqueID().replace(/\//g, "0");
-    // console.log(store.id);
 
     this.playerName = await (window as any).player.getName();
     store.playerName = this.playerName;
@@ -125,12 +123,12 @@ export class BootScene extends Phaser.Scene {
     } catch (e) {
       console.error('Ошибка инициализации лидерборда', e);
     }
-
-   await (window as any).ysdk.adv.showBannerAdv();
+   
   }
 
   async create() {
     this.texts = this.cache.json.get("texts");
+    await (window as any).ysdk.adv.showBannerAdv();
 
     new SoundManager(this);
 
@@ -178,12 +176,11 @@ export class BootScene extends Phaser.Scene {
       console.warn('[YSDK] features.LoadingAPI не доступен после 3 секунд.');
     }
 
-
     if (store.isGameOnline) {
       this.scene.start('Game');
     } else {
       this.scene.start('Start');
-    }
+    } 
 
   }
 
