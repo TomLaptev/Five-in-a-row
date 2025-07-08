@@ -21,6 +21,7 @@
     isGameOnline: boolean;
     isYouX: boolean;
     isRoom: boolean;
+    isGameStarted: boolean;
 }
 
 const store: IStore = {
@@ -45,6 +46,7 @@ const store: IStore = {
     available: true,
     gameData: null,
     isRoom: false,
+    isGameStarted: false,
 }
 
 export default store;

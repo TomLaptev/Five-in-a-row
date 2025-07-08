@@ -30,7 +30,7 @@ export default class GameScene extends Phaser.Scene {
   cells: Cell[] = [];
   movesArr: number[] = [];
   pointer: any;
-  sounds: any;
+  sounds: Record<string, Phaser.Sound.BaseSound> = {};
   starsNumber: number;
   prizeStarNumber: number = 5;
   Timer: any;
@@ -127,8 +127,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    //  console.log('store.isRoom: ', store.isRoom);
-    // console.log('this.socket: ', this.socket);
 
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
@@ -166,6 +164,9 @@ export default class GameScene extends Phaser.Scene {
       this.startGameForTwo()
     }
     else if (store.isGameOnline) this.startGameOnline();
+
+    store.isGameStarted = true;
+
 
   }
 
@@ -316,13 +317,19 @@ export default class GameScene extends Phaser.Scene {
             return; // Игнорируем правую кнопку, ничего не делаем
           }
           this.rivalName = expertText;
-          this.isExpert = true;
           this.isAmateur = false;
           this.isNewbie = false;
           this.rivalAvatar = Images.EXPERT_G;
           this.rivalRating = 1400;
-          this.starsNumber > 0 ? this.chooseRival()
-            : !this.isPopUpCheckStars ? this.getStars() : 1;
+          if (this.starsNumber > 0) {
+            this.isExpert = true;
+            this.chooseRival();
+          } else {
+            if (!this.isPopUpCheckStars) {
+              this.isExpert = false;
+               this.getStars()
+            }
+          }
 
           popUpContainer.destroy(true);
         })
@@ -863,6 +870,7 @@ export default class GameScene extends Phaser.Scene {
     } else this.add.sprite(0, 0, Images.BACKGROUND_V).setOrigin(0, 0);
   }
   createSounds() {
+    Object.values(this.sounds).forEach(sound => sound.destroy());
     this.sounds = {
       complete: this.sound.add(Sounds.COMPLETE),
       loss: this.sound.add(Sounds.LOSS),
@@ -966,17 +974,23 @@ export default class GameScene extends Phaser.Scene {
 
   //Для выхода из игрового процесса
   createButtonExit() {
-    if (store.isForTwo) { }
+    let isButtonExitPressed: boolean = false;
     this.add.sprite(this.timeBar.x + 250, this.timeBar.y, Images.CANCEL)
 
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
-        if (pointer.rightButtonDown()) {
-          return; // Игнорируем правую кнопку, ничего не делаем
+        if (!isButtonExitPressed && pointer.rightButtonDown() ||
+          (store.isYouX && this.GA.moveStorage.length % 2 !== 0
+            || !store.isYouX && this.GA.moveStorage.length % 2 == 0)) {
+          isButtonExitPressed = true;
+          console.log('ButtonExit нажата???');
+          return; // Игнорируем кнопку, ничего не делаем
+        } else {
+          console.log('ButtonExit нажата!!!');
+          isButtonExitPressed = false;
+          this.clearProfileContainer();
+          this.handleExit();
         }
-        console.log('ButtonExit нажата!!!');
-        this.clearProfileContainer();
-        this.handleExit();
       })
 
 
@@ -1091,8 +1105,8 @@ export default class GameScene extends Phaser.Scene {
       async () => {
         if (store.isAuth) {
           try {
-             await (window as any).ysdk.leaderboards.getEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
-                .then((res: any) => store.allPlayers = res)
+            await (window as any).ysdk.leaderboards.getEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
+              .then((res: any) => store.allPlayers = res)
           } catch (e) {
             console.log('запрос LeaderboardPlayerEntries', e);
           }
@@ -1230,7 +1244,7 @@ export default class GameScene extends Phaser.Scene {
     // console.log(`this.starsNumber: ${this.starsNumber} `);
     // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
     // console.log('this.profileContainer: ', this.profileContainer);
-   // console.log('this.isExpert: ', this.isExpert);
+    // console.log('this.isExpert: ', this.isExpert);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
 
@@ -1717,8 +1731,12 @@ export default class GameScene extends Phaser.Scene {
 
   // Выход из игрового процесса
   handleExit() {
-    console.log('this.isGameSession: ', this.isGameSession)
-    this.isExpert = false;
+    // console.log('this.isTimerOn: ', this.isTimerOn);
+    // console.log('this.isGameSession: ', this.isGameSession)
+
+    if (store.isGameOnline && this.isTimerOn === false) {
+      this.scene.start('Start');
+    }
 
     if ((store.isForTwo || store.isVsComputer) && this.GA.moveStorage.length < 2) {
       this.scene.start("Start");
@@ -1736,7 +1754,6 @@ export default class GameScene extends Phaser.Scene {
           this.scene.start("Start");
         }
       }
-
     } else if (!store.isForTwo && this.GA.moveStorage.length > 1
       && this.GA.moveStorage.length < 100
       && this.exitFromGamePopUp == null
@@ -1806,8 +1823,16 @@ export default class GameScene extends Phaser.Scene {
         this.clearUserRoom();
         console.log("Игрок вышел из игры");
         this.isExpert = false;
+        this.isTimerOn = false;
+
+        // console.log('this.isGameSession: ', this.isGameSession);
+        // console.log('this.socket: ', this.socket);
+        // console.log('this.isTimerOn: ', this.isTimerOn);
+
       }
     }
+
+
   }
 
   private clearExitElements() {

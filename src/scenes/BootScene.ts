@@ -6,6 +6,7 @@ export class BootScene extends Phaser.Scene {
   private progressBar: Phaser.GameObjects.Graphics;
   playerName: string;
   texts: Record<string, Record<string, string>> = {};
+
   constructor() {
     super({
       key: 'Boot',
@@ -13,12 +14,12 @@ export class BootScene extends Phaser.Scene {
   }
 
   private loadTitleWithTranslation(): void {
-  // Здесь логика для перевода заголовка по store.lang
- // console.log('Перевод заголовка с учетом языка:', store.lang);
-  // Например:
-  const playerNameText = this.texts[store.lang]?.playerNameText || this.texts["en"]?.playerNameText;
-  store.playerName = playerNameText;
-}
+    // Здесь логика для перевода заголовка по store.lang
+    // console.log('Перевод заголовка с учетом языка:', store.lang);
+    // Например:
+    const playerNameText = this.texts[store.lang]?.playerNameText || this.texts["en"]?.playerNameText;
+    store.playerName = playerNameText;
+  }
 
   async initSDK(): Promise<any> {
     return (window as any).YaGames
@@ -27,21 +28,21 @@ export class BootScene extends Phaser.Scene {
         (window as any).ysdk = ysdk;
 
         store.lang = ysdk.environment.i18n.lang;
-         this.loadTitleWithTranslation(); // ✅ теперь безопасно — язык гарантированно установлен
+        this.loadTitleWithTranslation(); // язык гарантированно установлен
         console.log('Язык установлен:', store.lang);
         return ysdk;
       })
   }
 
   async waitForLoadingAPI(timeout = 3000): Promise<boolean> {
-  const start = performance.now();
-  while (performance.now() - start < timeout) {
-    const api = (window as any).ysdk?.features?.LoadingAPI;
-    if (api?.ready) return true;
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    const start = performance.now();
+    while (performance.now() - start < timeout) {
+      const api = (window as any).ysdk?.features?.LoadingAPI;
+      if (api?.ready) return true;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    return false;
   }
-  return false;
-}
 
   async preload(): Promise<void> {
     this.createLoadingbar();
@@ -123,47 +124,56 @@ export class BootScene extends Phaser.Scene {
     } catch (e) {
       console.error('Ошибка инициализации лидерборда', e);
     }
-   
+
   }
 
   async create() {
+    console.log('store.isGameStarted:', store.isGameStarted);
     this.texts = this.cache.json.get("texts");
     await (window as any).ysdk.adv.showBannerAdv();
-
+    console.log('store.isGameStarted:', store.isGameStarted);
     new SoundManager(this);
+    this.game.sound.pauseAll();
 
     localStorage.setItem('isSoundEnable', 'true');
 
-    document.addEventListener('visibilitychange', () => {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      window.removeEventListener('blur', onBlur);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    });
+
+    const onVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
         console.log('Страница скрыта');
         this.game.sound.pauseAll();
       } else if (document.visibilityState === 'visible') {
         console.log('Страница снова видима');
-        if (store.isMusicEnabled) {
+        if (store.isMusicEnabled && store.isGameStarted) {
           this.game.sound.resumeAll();
         }
       }
-    });
+    };
 
-    window.addEventListener('blur', () => {
+    const onBlur = () => {
       console.log('Окно потеряло фокус');
       this.game.sound.pauseAll();
-    });
+    };
 
-    window.addEventListener('focus', () => {
+    const onFocus = () => {
       console.log('Окно снова в фокусе');
-
-      if (store.isMusicEnabled) {
+      if (store.isMusicEnabled && store.isGameStarted) {
         if (this.game.sound.locked) {
-          this.input.once('pointerdown', () => {
-            this.game.sound.resumeAll();
-          });
+          this.input.once('pointerdown', () => this.game.sound.resumeAll());
         } else {
           this.game.sound.resumeAll();
         }
       }
-    });
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('blur', onBlur);
+    window.addEventListener('focus', onFocus);
 
     if (await this.waitForLoadingAPI()) {
       try {
@@ -176,11 +186,16 @@ export class BootScene extends Phaser.Scene {
       console.warn('[YSDK] features.LoadingAPI не доступен после 3 секунд.');
     }
 
+    // Удаляем обработчики, чтобы не вмешивались в другие сцены
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    window.removeEventListener('blur', onBlur);
+    window.removeEventListener('focus', onFocus);
+
     if (store.isGameOnline) {
       this.scene.start('Game');
     } else {
       this.scene.start('Start');
-    } 
+    }
 
   }
 

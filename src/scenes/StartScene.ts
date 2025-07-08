@@ -56,7 +56,7 @@ export class StartScene extends Phaser.Scene {
     }
 
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
-
+    store.isGameStarted = true;
   };
 
   createBackground() {
