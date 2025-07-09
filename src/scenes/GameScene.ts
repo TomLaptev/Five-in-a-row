@@ -1729,7 +1729,7 @@ export default class GameScene extends Phaser.Scene {
   }
   //======== Отслеживание подключения === end ===============================
 
-  // Выход из игрового процесса
+  
   handleExit() {
     // console.log('this.isTimerOn: ', this.isTimerOn);
     // console.log('this.isGameSession: ', this.isGameSession)
