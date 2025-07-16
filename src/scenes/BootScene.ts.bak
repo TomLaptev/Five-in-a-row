@@ -128,10 +128,10 @@ export class BootScene extends Phaser.Scene {
   }
 
   async create() {
-    //console.log('store.isGameStarted:', store.isGameStarted);
+    console.log('store.isGameStarted:', store.isGameStarted);
     this.texts = this.cache.json.get("texts");
     await (window as any).ysdk.adv.showBannerAdv();
-    //console.log('store.isGameStarted:', store.isGameStarted);
+    console.log('store.isGameStarted:', store.isGameStarted);
     new SoundManager(this);
     this.game.sound.pauseAll();
 
