@@ -127,11 +127,18 @@ export class BootScene extends Phaser.Scene {
 
   }
 
-  async create() {
-    //console.log('store.isGameStarted:', store.isGameStarted);
+  async create() {    
     this.texts = this.cache.json.get("texts");
-    await (window as any).ysdk.adv.showBannerAdv();
-    //console.log('store.isGameStarted:', store.isGameStarted);
+    if ((window as any).ysdk?.adv?.showBannerAdv) {
+      try {
+        await (window as any).ysdk.adv.showBannerAdv();
+      } catch (e) {
+        console.warn("Ошибка показа баннера:", e);
+      }
+    } else {
+      console.warn("ysdk.adv недоступен — пропускаем показ баннера");
+    }
+    
     new SoundManager(this);
     this.game.sound.pauseAll();
 
