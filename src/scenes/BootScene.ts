@@ -127,7 +127,7 @@ export class BootScene extends Phaser.Scene {
 
   }
 
-  async create() {    
+  async create() {   
     this.texts = this.cache.json.get("texts");
     if ((window as any).ysdk?.adv?.showBannerAdv) {
       try {
@@ -140,47 +140,8 @@ export class BootScene extends Phaser.Scene {
     }
     
     new SoundManager(this);
-    this.game.sound.pauseAll();
 
     localStorage.setItem('isSoundEnable', 'true');
-
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      window.removeEventListener('blur', onBlur);
-      window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-    });
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        console.log('Страница скрыта');
-        this.game.sound.pauseAll();
-      } else if (document.visibilityState === 'visible') {
-        console.log('Страница снова видима');
-        if (store.isMusicEnabled && store.isGameStarted) {
-          this.game.sound.resumeAll();
-        }
-      }
-    };
-
-    const onBlur = () => {
-      console.log('Окно потеряло фокус');
-      this.game.sound.pauseAll();
-    };
-
-    const onFocus = () => {
-      console.log('Окно снова в фокусе');
-      if (store.isMusicEnabled && store.isGameStarted) {
-        if (this.game.sound.locked) {
-          this.input.once('pointerdown', () => this.game.sound.resumeAll());
-        } else {
-          this.game.sound.resumeAll();
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', onVisibilityChange);
-    window.addEventListener('blur', onBlur);
-    window.addEventListener('focus', onFocus);
 
     if (await this.waitForLoadingAPI()) {
       try {
@@ -192,11 +153,6 @@ export class BootScene extends Phaser.Scene {
     } else {
       console.warn('[YSDK] features.LoadingAPI не доступен после 3 секунд.');
     }
-
-    // Удаляем обработчики, чтобы не вмешивались в другие сцены
-    document.removeEventListener('visibilitychange', onVisibilityChange);
-    window.removeEventListener('blur', onBlur);
-    window.removeEventListener('focus', onFocus);
 
     if (store.isGameOnline) {
       this.scene.start('Game');

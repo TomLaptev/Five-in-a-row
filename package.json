@@ -39,7 +39,6 @@
     "expres": "^0.0.5",
     "file": "^0.2.2",
     "file-loader": "^6.2.0",
-    "firebase": "^11.1.0",
     "long": "^5.2.3",
     "mobile-detect": "^1.4.5",
     "socket.io-client": "^4.8.1",
