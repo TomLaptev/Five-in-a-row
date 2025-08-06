@@ -987,7 +987,9 @@ export default class GameScene extends Phaser.Scene {
         console.log('this.GA.moveStorage.length: ', this.GA.moveStorage.length)
         console.log('this.isButtonExitPressed: ', this.isButtonExitPressed)
 
-        if (pointer.rightButtonDown()) {
+        if (pointer.rightButtonDown()
+        || this.GA.isFinish && this.exitFromGamePopUp == null) {
+          console.log('Игнорируем нажатие');
           return; // Игнорируем кнопку, ничего не делаем
         }
 
