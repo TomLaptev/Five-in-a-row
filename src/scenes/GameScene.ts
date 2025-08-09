@@ -97,9 +97,12 @@ export default class GameScene extends Phaser.Scene {
   paginationContainer: Phaser.GameObjects.Container;
   games: number;
   wins: number;
-  botButton: any;
-  botName: any;
-  botRating: any;
+  expertButton: any;
+  newbieButton: any;
+  expertName: any;
+  newbieName: any;
+  expertRating: any;
+  newbieRating: any;
   inviteButton: Phaser.GameObjects.Sprite;
   mailIcon: any;
   connectionOverlay: any | null = null;
@@ -263,6 +266,8 @@ export default class GameScene extends Phaser.Scene {
               },
               onClose: () => {
                 console.log('Video ad closed.');
+                this.isExpert = false;
+                this.isNewbie = false;
                 if (store.isGameOnline) {
                   this.socket.emit("requestPlayers");
                 }
@@ -390,9 +395,9 @@ export default class GameScene extends Phaser.Scene {
           this.isAmateur = false;
           this.isNewbie = true;
           this.rivalAvatar = Images.NEWBIE;
-          this.rivalRating = 1150;
+          this.rivalRating = 1100;
           this.chooseRival()
-        });
+        })
     newbieButton.setScale(0.65)
 
     const newbieTextBlock = this.add.text(newbieButton.x, 360, newbieText, {
@@ -428,7 +433,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.setPlayerRating();
     this.setStars();
-    
+
 
     console.log('store.isRoom: ', store.isRoom);
     console.log('this.socket: ', this.socket);
@@ -565,8 +570,9 @@ export default class GameScene extends Phaser.Scene {
         .sprite(this.cameras.main.centerX + 370, this.cameras.main.centerY - 345, (
           store.isVsComputer ? this.rivalAvatar
             : store.isForTwo ? Images.AMATEUR
-              : store.isGameOnline && !this.opponentId ? Images.EXPERT_G
-                : this.opponentId))
+              : store.isGameOnline && !this.opponentId && this.isExpert ? Images.EXPERT_G
+                : store.isGameOnline && !this.opponentId && this.isNewbie ? Images.NEWBIE
+                  : this.opponentId))
         .setOrigin(0.5, 0);
       avatar.setScale(0.45);
     }
@@ -862,8 +868,9 @@ export default class GameScene extends Phaser.Scene {
     this.GA.moveStorage.length = 0;
     this.GA.isFinish = false;
 
-    //после игры с экспертом
-    this.isExpert = false;
+    //после игры с ботами
+    // this.isExpert = false;
+    // this.isNewbie = false;
     this.opponentExists = false;
   }
 
@@ -988,13 +995,14 @@ export default class GameScene extends Phaser.Scene {
         console.log('this.isButtonExitPressed: ', this.isButtonExitPressed)
 
         if (pointer.rightButtonDown()
-        || this.GA.isFinish && this.exitFromGamePopUp == null) {
+          || this.GA.isFinish && this.exitFromGamePopUp == null) {
           console.log('Игнорируем нажатие');
           return; // Игнорируем кнопку, ничего не делаем
         }
 
         if (!this.isButtonExitPressed) {
           console.log('ButtonExit нажата!!!');
+         this.isNewbie = false;
           this.isButtonExitPressed = true;
           this.clearProfileContainer();
           this.handleExit();
@@ -1012,12 +1020,16 @@ export default class GameScene extends Phaser.Scene {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
         console.log('ButtonCancal нажата!!!');
+        this.isExpert = false;
         this.handleCancal();
       })
 
   }
 
   actionButtonConfirm() {
+     //после игры с ботами
+    this.isExpert = false;
+    this.isNewbie = false;
     this.isSender = false;
     this.clearProfileContainer();
     this.isGameSession = false;
@@ -1112,6 +1124,9 @@ export default class GameScene extends Phaser.Scene {
       null, null, null,
       async () => {
         if (store.isAuth) {
+          //после игры с ботами
+          this.isExpert = false;
+          this.isNewbie = false;
           try {
             await (window as any).ysdk.leaderboards.getEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
               .then((res: any) => store.allPlayers = res)
@@ -1245,19 +1260,21 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
-    // console.log(`isGameSession: ${this.isGameSession} `); //false
-    // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
-    // console.log(`this.isSender: ${this.isSender} `); //false
-    // console.log(`store.isRoom: ${store.isRoom} `); // false
-    // console.log(`this.starsNumber: ${this.starsNumber} `);
-    // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
-    // console.log('this.profileContainer: ', this.profileContainer);
-    // console.log('this.isExpert: ', this.isExpert);
+    console.log(`isGameSession: ${this.isGameSession} `); //false
+    console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
+    console.log(`this.isSender: ${this.isSender} `); //false
+    console.log(`store.isRoom: ${store.isRoom} `); // false
+    console.log(`this.starsNumber: ${this.starsNumber} `);
+    console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
+    console.log('this.profileContainer: ', this.profileContainer);
+    console.log('this.isExpert: ', this.isExpert);
+    console.log('this.isNewbie: ', this.isNewbie);
     console.log('this.socket: ', this.socket);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
+    const newbieText = this.texts[store.lang]?.newbieText || this.texts["en"]?.newbieText;
 
-    if (!store.isRoom && !this.isExpert && !this.isGameSession && !this.GA.isFinish
+    if (!store.isRoom && !this.isExpert && !this.isNewbie && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
 
       (window as any).ysdk?.features?.GameplayAPI?.stop?.();
@@ -1312,16 +1329,16 @@ export default class GameScene extends Phaser.Scene {
       console.log("Обновленный список игроков:", playersList);
     }
 
-    this.botButton = this.add.sprite(220, 55, Images.BUTTON_PLAYER)
+    this.expertButton = this.add.sprite(220, 55, Images.BUTTON_PLAYER)
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        this.isExpert = true;
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
         if (this.starsNumber) {
           this.сreateProfile('', store.lang, expertText, 1400, '', '> 1000', '> 1000');
           this.isSender = true;
-          this.isExpert = true;
           // Обновляем состояние пользователя (available: false)
           this.socket.emit("updatePlayersStatus", {
             id: this.socket.id,
@@ -1340,23 +1357,63 @@ export default class GameScene extends Phaser.Scene {
         }
       });
 
-    this.botName = this.add.text(55, 40, expertText, {
+    this.expertName = this.add.text(55, 40, expertText, {
       font: "24px BadComic-Regular",
       color: "#ffff55",
     });
 
-    this.botRating = this.add.text(320, 40, '1400', {
+    this.expertRating = this.add.text(320, 40, '1400', {
       font: "24px BadComic-Regular",
       color: "#ffff55",
     });
 
-    this.playersContainer.add([this.botButton, this.botName, this.botRating]);
+    this.playersContainer.add([this.expertButton, this.expertName, this.expertRating]);
+
+    this.newbieButton = this.add.sprite(220, 100, Images.BUTTON_PLAYER)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        this.isNewbie = true;
+        if (pointer.rightButtonDown()) {
+          return; // Игнорируем правую кнопку, ничего не делаем
+        }
+        if (this.starsNumber) {
+          this.сreateProfile('', store.lang, newbieText, 1100, '', '< 100', '< 100');
+          this.isSender = true;
+          // Обновляем состояние пользователя (available: false)
+          this.socket.emit("updatePlayersStatus", {
+            id: this.socket.id,
+            opponentSocketId: this.socket.id,
+            available: false,
+            rating: this.playerRating,
+          });
+          this.socket.emit("requestPlayers");
+          this.deleteControlPanele();
+          this.deletePlayersContainer();
+
+        } else if (this.starsNumber <= 0) {
+          this.deleteControlPanele();
+          this.deletePlayersContainer();
+          this.getStars();
+        }
+      });
+
+    this.newbieName = this.add.text(55, 85, newbieText, {
+      font: "24px BadComic-Regular",
+      color: "#ffff55",
+    });
+
+    this.newbieRating = this.add.text(320, 85, '1100', {
+      font: "24px BadComic-Regular",
+      color: "#ffff55",
+    });
+
+    this.playersContainer.add([this.newbieButton, this.newbieName, this.newbieRating]);
   }
 
   updatePlayersContainer(page: number): void {
-    let textY = page === 1 ? 45 : 0;
+    let textY = page === 1 ? 90 : 0;
 
-    const playersPerPage = page === 1 ? 9 : 10;
+    const playersPerPage = page === 1 ? 8 : 10;
     const start = (page - 1) * playersPerPage;
     const end = start + playersPerPage;
     const visiblePlayers = this.sortedPlayersArray.slice(start, end);
@@ -1560,8 +1617,9 @@ export default class GameScene extends Phaser.Scene {
 
       setTimeout(() => {
         console.log(`this.isExpert: ${this.isExpert} `);
+        console.log(`this.isisNewbie: ${this.isNewbie} `);
 
-        if (this.isExpert) {
+        if (this.isExpert || this.isNewbie) {
           this.scene.restart();
 
           setTimeout(() => {
@@ -1755,6 +1813,7 @@ export default class GameScene extends Phaser.Scene {
       console.log('this.isExpert: ', this.isExpert);
       console.log('this.socket: ', this.socket);
       this.isExpert = false;
+      this.isNewbie = false;
       this.scene.start('Start');
     }
 
@@ -1879,6 +1938,8 @@ export default class GameScene extends Phaser.Scene {
   }
 
   handleCancal() {
+    this.isExpert = false;
+    this.isNewbie = false;
     if (this.socket) {
       if (this.isPopUpCheckStars) {
         this.scene.start("Game");
@@ -1914,7 +1975,8 @@ export default class GameScene extends Phaser.Scene {
     this.clearProfileContainer();
 
     this.profileContainer = this.add.container(this.cameras.main.centerX - 300, this.cameras.main.centerY - 220);//для отображения на дисплее    
-
+    console.log('this.isExpert: ', this.isExpert);
+    console.log('this.isNewbie: ', this.isNewbie);
     //Вызов динамической загрузки аватара
     //console.log(avatarUrl)
     if (avatarUrl) {
@@ -1923,8 +1985,12 @@ export default class GameScene extends Phaser.Scene {
         this.avatarMask = this.add.image(this.cameras.main.centerX - 181, this.cameras.main.centerY - 26, Images.MASK);
 
       })
-    } else {
+    } else if (this.isExpert) {
       this.opponentAvatar = this.add.image(this.cameras.main.centerX - 180, this.cameras.main.centerY - 25, Images.EXPERT);
+      this.avatarMask = this.add.image(this.cameras.main.centerX - 181, this.cameras.main.centerY - 26, Images.MASK);
+    }
+    else if (this.isNewbie) {
+      this.opponentAvatar = this.add.image(this.cameras.main.centerX - 180, this.cameras.main.centerY - 25, Images.NEWBIE);
       this.avatarMask = this.add.image(this.cameras.main.centerX - 181, this.cameras.main.centerY - 26, Images.MASK);
     }
 
@@ -2068,7 +2134,7 @@ export default class GameScene extends Phaser.Scene {
       color: "#f5ebdf",
     });
 
-
+    console.log('Test!!!')
     // Кнопка взврата к списку игроков / отклонения приглашения
 
     const backButton = this.add.sprite(popUp.x + 470, popUp.y + 450, Images.BACK_BUTTON)
@@ -2079,6 +2145,7 @@ export default class GameScene extends Phaser.Scene {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
         this.isExpert = false;
+        this.isNewbie = false;
         this.clearProfileContainer();
         console.log({ roomId: this.privateRoomId });
         console.log('backButton нажата!!!')

@@ -311,7 +311,7 @@ export default class GameAlgoritm {
 
           if (this.sampleGA[0].w >= this.templX[2].attackWeight  // 5!
 
-            || (this.sampleGA[0].w >= this.templX[4].attackWeight + this.templX[13].attackWeight// зкр.4 + откр.2
+            || (this.sampleGA[0].w >= this.templX[4].attackWeight //+ this.templX[13].attackWeight// зкр.4 + откр.2
               && this.sampleR[0].z < this.templX[2].protectionWeight) // меньше 5
 
             || (this.sampleGA[0].w >= this.templX[10].attackWeight  //откр.3
@@ -336,27 +336,25 @@ export default class GameAlgoritm {
         }
         else if (this.scene.isNewbie) {
 
-          if (this.sampleGA[0].w >= this.templX[2].attackWeight  // 5!
-
-            || (this.sampleGA[0].w >= this.templX[4].attackWeight + this.templX[13].attackWeight// зкр.4 + откр.2
-              && this.sampleR[0].z < this.templX[2].protectionWeight) // меньше 5
+          if (this.sampleGA[0].w >= this.templX[2].attackWeight
+            && Math.random() > 0.7  // 5!
 
             || (this.sampleGA[0].w >= this.templX[10].attackWeight  //откр.3
-              && this.sampleR[0].z < this.templX[4].protectionWeight //+ this.templX[10].protectionWeight)  // зкр.4 + откр.3
-              || this.sampleR[0].z == this.templX[4].protectionWeight // зкр.4
+              && Math.random() > 0.5
 
             )) {
             // console.log("атака");
 
-            if (this.moveStorage.length < 5) {
-              this.onCellClicked(this.scene.cells[this.sampleGA[Math.floor(Math.random() * 3)].id]);
-
-            } else {
-              this.onCellClicked(this.scene.cells[this.sampleGA[this.bestGA].id]);
-            }
+              this.onCellClicked(this.scene.cells[this.sampleGA[0].id]);
+           
 
           } else {
-            this.onCellClicked(this.scene.cells[this.sampleR[this.bestR].id]);
+            if ( Math.random() > 0.5) {
+              this.onCellClicked(this.scene.cells[this.sampleR[0].id]);
+            } else {
+              this.onCellClicked(this.scene.cells[this.sampleR[1].id]);
+            }
+            
 
           }
 
