@@ -32,6 +32,7 @@ export default class GameScene extends Phaser.Scene {
   pointer: any;
   sounds: Record<string, Phaser.Sound.BaseSound> = {};
   starsNumber: number;
+  stars: Phaser.GameObjects.Sprite[] = [];
   prizeStarNumber: number = 5;
   Timer: any;
   gameResult: number = 0;
@@ -1002,7 +1003,7 @@ export default class GameScene extends Phaser.Scene {
 
         if (!this.isButtonExitPressed) {
           console.log('ButtonExit нажата!!!');
-         this.isNewbie = false;
+          this.isNewbie = false;
           this.isButtonExitPressed = true;
           this.clearProfileContainer();
           this.handleExit();
@@ -1027,7 +1028,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   actionButtonConfirm() {
-     //после игры с ботами
+    //после игры с ботами
     this.isExpert = false;
     this.isNewbie = false;
     this.isSender = false;
@@ -1118,7 +1119,7 @@ export default class GameScene extends Phaser.Scene {
     this.winnersButton = new Button(
       this,
       this.cameras.main.centerX - 192,
-      this.cameras.main.centerY + 300,
+      this.cameras.main.centerY + 305,
       null, null, null,
       Images.BUTTON_WINNERS,
       null, null, null,
@@ -1157,7 +1158,7 @@ export default class GameScene extends Phaser.Scene {
       });
 
     this.backButton = this.add.sprite(this.cameras.main.centerX + 150,
-      this.cameras.main.centerY + 265, Images.BACK_BUTTON)
+      this.cameras.main.centerY + 270, Images.BACK_BUTTON)
       .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
@@ -1169,6 +1170,7 @@ export default class GameScene extends Phaser.Scene {
       })
 
     this.frame = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 10, Images.FRAME).setOrigin(0.5, 0.5);
+
   }
 
   createButtonLater() {
@@ -1235,6 +1237,7 @@ export default class GameScene extends Phaser.Scene {
     roomNameText.setOrigin(0.5, 0.5);
 
     this.playersContainer.add([roomName, roomNameText]);
+ 
   }
 
   deleteControlPanele() {
@@ -1269,10 +1272,8 @@ export default class GameScene extends Phaser.Scene {
     console.log('this.profileContainer: ', this.profileContainer);
     console.log('this.isExpert: ', this.isExpert);
     console.log('this.isNewbie: ', this.isNewbie);
-    console.log('this.socket: ', this.socket);
+    console.log('this.socket: ', this.socket);    
 
-    const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
-    const newbieText = this.texts[store.lang]?.newbieText || this.texts["en"]?.newbieText;
 
     if (!store.isRoom && !this.isExpert && !this.isNewbie && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
@@ -1329,99 +1330,114 @@ export default class GameScene extends Phaser.Scene {
       console.log("Обновленный список игроков:", playersList);
     }
 
-    this.expertButton = this.add.sprite(220, 55, Images.BUTTON_PLAYER)
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-        this.isExpert = true;
-        if (pointer.rightButtonDown()) {
-          return; // Игнорируем правую кнопку, ничего не делаем
-        }
-        if (this.starsNumber) {
-          this.сreateProfile('', store.lang, expertText, 1400, '', '> 1000', '> 1000');
-          this.isSender = true;
-          // Обновляем состояние пользователя (available: false)
-          this.socket.emit("updatePlayersStatus", {
-            id: this.socket.id,
-            opponentSocketId: this.socket.id,
-            available: false,
-            rating: this.playerRating,
-          });
-          this.socket.emit("requestPlayers");
-          this.deleteControlPanele();
-          this.deletePlayersContainer();
-
-        } else if (this.starsNumber <= 0) {
-          this.deleteControlPanele();
-          this.deletePlayersContainer();
-          this.getStars();
-        }
-      });
-
-    this.expertName = this.add.text(55, 40, expertText, {
-      font: "24px BadComic-Regular",
-      color: "#ffff55",
-    });
-
-    this.expertRating = this.add.text(320, 40, '1400', {
-      font: "24px BadComic-Regular",
-      color: "#ffff55",
-    });
-
-    this.playersContainer.add([this.expertButton, this.expertName, this.expertRating]);
-
-    this.newbieButton = this.add.sprite(220, 100, Images.BUTTON_PLAYER)
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-        this.isNewbie = true;
-        if (pointer.rightButtonDown()) {
-          return; // Игнорируем правую кнопку, ничего не делаем
-        }
-        if (this.starsNumber) {
-          this.сreateProfile('', store.lang, newbieText, 1100, '', '< 100', '< 100');
-          this.isSender = true;
-          // Обновляем состояние пользователя (available: false)
-          this.socket.emit("updatePlayersStatus", {
-            id: this.socket.id,
-            opponentSocketId: this.socket.id,
-            available: false,
-            rating: this.playerRating,
-          });
-          this.socket.emit("requestPlayers");
-          this.deleteControlPanele();
-          this.deletePlayersContainer();
-
-        } else if (this.starsNumber <= 0) {
-          this.deleteControlPanele();
-          this.deletePlayersContainer();
-          this.getStars();
-        }
-      });
-
-    this.newbieName = this.add.text(55, 85, newbieText, {
-      font: "24px BadComic-Regular",
-      color: "#ffff55",
-    });
-
-    this.newbieRating = this.add.text(320, 85, '1100', {
-      font: "24px BadComic-Regular",
-      color: "#ffff55",
-    });
-
-    this.playersContainer.add([this.newbieButton, this.newbieName, this.newbieRating]);
   }
 
   updatePlayersContainer(page: number): void {
-    let textY = page === 1 ? 90 : 0;
+    let textY = page === 1 ? 110 : 0;
 
     const playersPerPage = page === 1 ? 8 : 10;
     const start = (page - 1) * playersPerPage;
     const end = start + playersPerPage;
     const visiblePlayers = this.sortedPlayersArray.slice(start, end);
+    const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
+    const newbieText = this.texts[store.lang]?.newbieText || this.texts["en"]?.newbieText;
+
+    if (page === 1 && !this.profileContainer) 
+      {for (let i = 0; i < this.starsNumber; i++) {
+      const star = this.add.sprite(
+        this.cameras.main.centerX - 220 + 100 + i * 60,
+        this.cameras.main.centerY - 275 + 25,
+         (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+       );
+       this.stars.push(star);
+     }
+      this.expertButton = this.add.sprite(220, 70, Images.BUTTON_PLAYER)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+          this.isExpert = true;
+          if (pointer.rightButtonDown()) {
+            return; // Игнорируем правую кнопку, ничего не делаем
+          }
+          if (this.starsNumber) {
+            this.сreateProfile('', store.lang, expertText, 1400, '', '> 1000', '> 1000');
+            this.isSender = true;
+            // Обновляем состояние пользователя (available: false)
+            this.socket.emit("updatePlayersStatus", {
+              id: this.socket.id,
+              opponentSocketId: this.socket.id,
+              available: false,
+              rating: this.playerRating,
+            });
+            this.socket.emit("requestPlayers");
+            this.deleteControlPanele();
+            this.deletePlayersContainer();
+
+          } else if (this.starsNumber <= 0) {
+            this.deleteControlPanele();
+            this.deletePlayersContainer();
+            this.getStars();
+          }
+        });
+
+      this.expertName = this.add.text(55, 55, expertText, {
+        font: "24px BadComic-Regular",
+        color: "#ffff55",
+      });
+
+      this.expertRating = this.add.text(320, 55, '1400', {
+        font: "24px BadComic-Regular",
+        color: "#ffff55",
+      });
+
+      this.playersContainer.add([this.expertButton, this.expertName, this.expertRating]);
+
+
+      this.newbieButton = this.add.sprite(220, 115, Images.BUTTON_PLAYER)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+          this.isNewbie = true;
+          if (pointer.rightButtonDown()) {
+            return; // Игнорируем правую кнопку, ничего не делаем
+          }
+          if (this.starsNumber) {
+            this.сreateProfile('', store.lang, newbieText, 1100, '', '< 100', '< 100');
+            this.isSender = true;
+            // Обновляем состояние пользователя (available: false)
+            this.socket.emit("updatePlayersStatus", {
+              id: this.socket.id,
+              opponentSocketId: this.socket.id,
+              available: false,
+              rating: this.playerRating,
+            });
+            this.socket.emit("requestPlayers");
+            this.deleteControlPanele();
+            this.deletePlayersContainer();
+
+          } else if (this.starsNumber <= 0) {
+            this.deleteControlPanele();
+            this.deletePlayersContainer();
+            this.getStars();
+          }
+        });
+
+      this.newbieName = this.add.text(55, 100, newbieText, {
+        font: "24px BadComic-Regular",
+        color: "#ffff55",
+      });
+
+      this.newbieRating = this.add.text(320, 100, '1100', {
+        font: "24px BadComic-Regular",
+        color: "#ffff55",
+      });
+
+      this.playersContainer.add([this.newbieButton, this.newbieName, this.newbieRating]);
+    }
+
 
     visiblePlayers.forEach((el: PlayerData) => {
       if (!this.isSender && !this.profileContainer) {
         if (el.id !== this.socket.id) {
-          const playerButton = this.add.sprite(220, textY + 55, el.available ? Images.BUTTON_PLAYER : Images.BUTTON_BUSY_PLAYER)
+          const playerButton = this.add.sprite(220, textY + 50, el.available ? Images.BUTTON_PLAYER : Images.BUTTON_BUSY_PLAYER)
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: el.available })
             .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
@@ -1453,12 +1469,12 @@ export default class GameScene extends Phaser.Scene {
               }
             });
 
-          const playerName = this.add.text(55, textY + 40, `${el.name}: `, {
+          const playerName = this.add.text(55, textY + 35, `${el.name}: `, {
             font: "24px BadComic-Regular",
             color: "#ffff55",
           });
 
-          const playerRating = this.add.text(320, textY + 40, `${el.rating}`, {
+          const playerRating = this.add.text(320, textY + 35, `${el.rating}`, {
             font: "24px BadComic-Regular",
             color: "#ffff55",
           });
@@ -1968,11 +1984,14 @@ export default class GameScene extends Phaser.Scene {
     this.sys.game.device.os.desktop ? this.rivalName = name : this.rivalName = rivalNameText;
     this.rivalRating = rating;
 
-    let inviteTextTween: any;
+    let inviteTextTween: any;    
 
     this.deletePlayersContainer();
     this.deleteControlPanele();
     this.clearProfileContainer();
+
+    this.stars.forEach(star => star.destroy());
+    this.stars = [];
 
     this.profileContainer = this.add.container(this.cameras.main.centerX - 300, this.cameras.main.centerY - 220);//для отображения на дисплее    
     console.log('this.isExpert: ', this.isExpert);
