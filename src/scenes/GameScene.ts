@@ -470,6 +470,8 @@ export default class GameScene extends Phaser.Scene {
     this.Timer.paused = false;
     this.createButtonExit();
 
+    this.cells.forEach(cell => cell.enable());
+
     //---------- Ход нолика -------------------
     if (!store.isYouX) {  // Вы - нолик, ходите вторым 
 
@@ -716,6 +718,9 @@ export default class GameScene extends Phaser.Scene {
     const firstMoveNotMadeText = this.texts[store.lang]?.firstMoveNotMadeText || this.texts["en"]?.firstMoveNotMadeText;
     const anotherGameText = this.texts[store.lang]?.anotherGameText || this.texts["en"]?.anotherGameText;
 
+    this.cells.forEach(cell => cell.disableInteractive());
+    this.input.setDefaultCursor('default');
+
     if (!store.isForTwo) {
       for (let i = 0; i < this.starsNumber; i++) {
         this.add.sprite(
@@ -868,10 +873,10 @@ export default class GameScene extends Phaser.Scene {
       }
     );
 
-    //   new Button(
+    // new Button(
     //   this,
     //   popUp.x + 545, popUp.y + 60, null, null, null,
-    //   Images.INFO,  null, null, null,      
+    //   Images.INFO, null, null, null,
     //   async () => {
 
     //   }
@@ -1270,17 +1275,16 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
-    console.log(`isGameSession: ${this.isGameSession} `); //false
-    console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
-    console.log(`this.isSender: ${this.isSender} `); //false
-    console.log(`store.isRoom: ${store.isRoom} `); // false
-    console.log(`this.starsNumber: ${this.starsNumber} `);
-    console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
-    console.log('this.profileContainer: ', this.profileContainer);
-    console.log('this.isExpert: ', this.isExpert);
-    console.log('this.isNewbie: ', this.isNewbie);
-    console.log('this.socket: ', this.socket);
-
+    // console.log(`isGameSession: ${this.isGameSession} `); //false
+    // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
+    // console.log(`this.isSender: ${this.isSender} `); //false
+    // console.log(`store.isRoom: ${store.isRoom} `); // false
+    // console.log(`this.starsNumber: ${this.starsNumber} `);
+    // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
+    // console.log('this.profileContainer: ', this.profileContainer);
+    // console.log('this.isExpert: ', this.isExpert);
+    // console.log('this.isNewbie: ', this.isNewbie);
+    // console.log('this.socket: ', this.socket);
 
     if (!store.isRoom && !this.isExpert && !this.isNewbie && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
@@ -1328,7 +1332,7 @@ export default class GameScene extends Phaser.Scene {
       this.pagination = new Pagination(this, totalPlayers, this.pagination ? this.pagination.currentPage : 1, (page) => {
         this.updatePlayersContainer(page);
         if (this.pagination) {
-          if (this.pagination.totalPages <= 1) {
+          if (this.pagination.totalPages <= 1 || this.profileContainer !==null) {
             this.pagination.hide();
           } else this.pagination.show();
         }
@@ -1340,7 +1344,8 @@ export default class GameScene extends Phaser.Scene {
   }
 
   updatePlayersContainer(page: number): void {
-    let textY = page === 1 ? 110 : 0;
+    this.createPlayersContainer();
+    let textY = page === 1 ? 110 : 20;
 
     const playersPerPage = page === 1 ? 8 : 10;
     const start = (page - 1) * playersPerPage;
@@ -1365,7 +1370,7 @@ export default class GameScene extends Phaser.Scene {
         );
         this.stars.push(star);
       }
-
+ 
       this.expertButton = this.add.sprite(220, 70, Images.BUTTON_PLAYER)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
@@ -1525,9 +1530,6 @@ export default class GameScene extends Phaser.Scene {
     if (roomData) {
       store.isRoom = true;
       this.roomData = true;
-
-      // console.log("isYouX:", roomData.isYouX);
-      // console.log("name:", roomData.name);
 
       this.deleteControlPanele();
 
@@ -1826,8 +1828,6 @@ export default class GameScene extends Phaser.Scene {
     }
   }
   //======== Отслеживание подключения === end ===============================
-
-
   handleExit() {
     console.log('this.isTimerOn: ', this.isTimerOn);
     // console.log('this.isGameSession: ', this.isGameSession)
@@ -1990,11 +1990,11 @@ export default class GameScene extends Phaser.Scene {
   }
 
   //============================= Создание профиля игрока ====================================
-
   async сreateProfile(id: string, lang: string, name: string, rating: any, avatarUrl: string, games: any, wins: any) {
     const rivalNameText = this.texts[store.lang]?.rivalNameText || this.texts["en"]?.rivalNameText;
     this.opponentId = id;
     this.pagination.hide();
+    let isInviteButtonPressed: boolean = false;
 
     this.sys.game.device.os.desktop ? this.rivalName = name : this.rivalName = rivalNameText;
     this.rivalRating = rating;
@@ -2036,7 +2036,6 @@ export default class GameScene extends Phaser.Scene {
       .setAlpha(0.95);
 
     //----------------------------- Кнопка "Пригласить"/"Играть"--------------------------------
-
     this.inviteButton =
       this.add.sprite(popUp.x + 120, popUp.y + 25, Images.INVITE_BUTTON)
         .setOrigin(0, 0)
@@ -2044,9 +2043,10 @@ export default class GameScene extends Phaser.Scene {
         .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
 
           (window as any).ysdk.features?.GameplayAPI?.start?.();
-          if (pointer.rightButtonDown()) {
+          if (pointer.rightButtonDown() || isInviteButtonPressed) {
             return; // Игнорируем правую кнопку, ничего не делаем
           }
+          isInviteButtonPressed = true;
 
           // Останавливаем пульсирующую анимацию текста
           if (inviteTextTween) {
@@ -2172,7 +2172,6 @@ export default class GameScene extends Phaser.Scene {
 
     console.log('Test!!!')
     // Кнопка взврата к списку игроков / отклонения приглашения
-
     const backButton = this.add.sprite(popUp.x + 470, popUp.y + 450, Images.BACK_BUTTON)
       .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true })
@@ -2216,7 +2215,6 @@ export default class GameScene extends Phaser.Scene {
         this.socket.emit("requestPlayers");
 
       });
-
     // Кнопка взврата к списку игроков / отклонения приглашения ----------------end----------
 
     this.createSoundButton();
@@ -2285,7 +2283,6 @@ export default class GameScene extends Phaser.Scene {
 
   handleRoomDelete(roomId: string): void {
     // console.log(`Приватная комната ${JSON.stringify(roomId)} удалена`);
-
     // console.log(`Оппонент отключился. Комната ${roomId} закрыта.`);
     // console.log(`isGameSession: ${this.isGameSession} `); //true
     // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
@@ -2342,14 +2339,6 @@ export default class GameScene extends Phaser.Scene {
   onCellClickedOnline(cell: Cell) {
     if (this.opponentId && this.isTimerOn) {
       this.opponentExists = true;
-      // console.log('есть нажатие!')
-      // console.log(this.textInTimeBar);
-      // console.log(store.isYouX);
-
-      // console.log('this.isGameSession: ', this.isGameSession);
-      // console.log('store.isYouX: ', store.isYouX);
-      // console.log('this.GA.moveStorage.length: ', this.GA.moveStorage.length);
-
       if (this.isGameSession && (store.isYouX && this.GA.moveStorage.length % 2 == 0
         || !store.isYouX && this.GA.moveStorage.length % 2 !== 0)) {
         this.Timer.paused = true;

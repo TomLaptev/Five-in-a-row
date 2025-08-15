@@ -69,7 +69,7 @@ export default class Pagination {
     // 3. Добавляем кнопки страниц
     for (let i = startPage; i <= endPage; i++) {
      const button = new Button(this.scene, 155 + (i - startPage) * 60, 575, null, null, 
-        i === targetPage ? "#ffff55" : "#ffffff", Images.BUTTON_FRAME, "'BadComic-Regular", 28, `${i}`, () => {
+        i === targetPage ? "#ffff00" : "#eee", Images.BUTTON_FRAME, "'BadComic-Regular", 28, `${i}`, () => {
         this.changePage(i);
       });
 

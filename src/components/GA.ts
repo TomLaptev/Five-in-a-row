@@ -44,7 +44,7 @@ export default class GameAlgoritm {
       this.isMoveAllowed = false;
       this.scene.pointer.destroy();
 
-     // console.log('cell.id: ', cell.id);
+      // console.log('cell.id: ', cell.id);
 
       //для крестика "обесцвечиваем" предыдущий нолик
       if (this.moveStorage.length % 2 == 0) {
@@ -78,7 +78,7 @@ export default class GameAlgoritm {
 
       if (this.moveStorage.length == 2
         && !store.isForTwo
-       //&& !this.scene.isNewbie
+        //&& !this.scene.isNewbie
       ) {
         this.scene.starsNumber >= 0.5 ? this.scene.starsNumber -= 0.5 : 1;
       }
@@ -122,7 +122,7 @@ export default class GameAlgoritm {
               winLine.push(testWinKit[i][testWinKit[i].length - 1 - count]);
               count++;
               if (count == 5) {
-                //console.log("Ура! Победа");
+                //console.log("Ура! Победа");                
                 this.isFinish = true;
                 this.scene.isTimerOn = false;
 
@@ -345,16 +345,16 @@ export default class GameAlgoritm {
             )) {
             // console.log("атака");
 
-              this.onCellClicked(this.scene.cells[this.sampleGA[0].id]);
-           
+            this.onCellClicked(this.scene.cells[this.sampleGA[0].id]);
+
 
           } else {
-            if ( Math.random() > 0.5) {
+            if (Math.random() > 0.5) {
               this.onCellClicked(this.scene.cells[this.sampleR[0].id]);
             } else {
               this.onCellClicked(this.scene.cells[this.sampleR[1].id]);
             }
-            
+
 
           }
 
