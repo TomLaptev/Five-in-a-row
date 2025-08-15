@@ -1,0 +1,3 @@
+ npm start в одной вкладке
+ npx @yandex-games/sdk-dev-proxy -h 127.0.0.1:3001 --app-id=307635 в другой вкладке (нажать y когда спросят)
+ https://yandex.ru/games/app/307635/?draft=true&game_url=https://localhost:8080 открыть ссылку

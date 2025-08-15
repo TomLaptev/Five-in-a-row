@@ -33,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
   sounds: Record<string, Phaser.Sound.BaseSound> = {};
   starsNumber: number;
   stars: Phaser.GameObjects.Sprite[] = [];
+  starsOutline: Phaser.GameObjects.Sprite[] = [];
   prizeStarNumber: number = 5;
   Timer: any;
   gameResult: number = 0;
@@ -828,7 +829,7 @@ export default class GameScene extends Phaser.Scene {
 
     new Button(
       this,
-      this.cameras.main.centerX,
+      popUp.x + 300,
       popUp.y + 360,
       null,
       null,
@@ -866,12 +867,18 @@ export default class GameScene extends Phaser.Scene {
 
       }
     );
+
+    //   new Button(
+    //   this,
+    //   popUp.x + 545, popUp.y + 60, null, null, null,
+    //   Images.INFO,  null, null, null,      
+    //   async () => {
+
+    //   }
+    // );
+
     this.GA.moveStorage.length = 0;
     this.GA.isFinish = false;
-
-    //после игры с ботами
-    // this.isExpert = false;
-    // this.isNewbie = false;
     this.opponentExists = false;
   }
 
@@ -1237,7 +1244,7 @@ export default class GameScene extends Phaser.Scene {
     roomNameText.setOrigin(0.5, 0.5);
 
     this.playersContainer.add([roomName, roomNameText]);
- 
+
   }
 
   deleteControlPanele() {
@@ -1272,7 +1279,7 @@ export default class GameScene extends Phaser.Scene {
     console.log('this.profileContainer: ', this.profileContainer);
     console.log('this.isExpert: ', this.isExpert);
     console.log('this.isNewbie: ', this.isNewbie);
-    console.log('this.socket: ', this.socket);    
+    console.log('this.socket: ', this.socket);
 
 
     if (!store.isRoom && !this.isExpert && !this.isNewbie && !this.isGameSession && !this.GA.isFinish
@@ -1342,15 +1349,23 @@ export default class GameScene extends Phaser.Scene {
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
     const newbieText = this.texts[store.lang]?.newbieText || this.texts["en"]?.newbieText;
 
-    if (page === 1 && !this.profileContainer) 
-      {for (let i = 0; i < this.starsNumber; i++) {
-      const star = this.add.sprite(
-        this.cameras.main.centerX - 220 + 100 + i * 60,
-        this.cameras.main.centerY - 275 + 25,
-         (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-       );
-       this.stars.push(star);
-     }
+    if (page === 1 && !this.profileContainer) {
+      for (let i = 0; i < 5; i++) {
+        const starOutline = this.add.sprite(
+          this.cameras.main.centerX - 220 + 100 + i * 60,
+          this.cameras.main.centerY - 275 + 25, Images.STAR_OUTLINE);
+        this.starsOutline.push(starOutline);
+      }
+
+      for (let i = 0; i < this.starsNumber; i++) {
+        const star = this.add.sprite(
+          this.cameras.main.centerX - 220 + 100 + i * 60,
+          this.cameras.main.centerY - 275 + 25,
+          (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+        );
+        this.stars.push(star);
+      }
+
       this.expertButton = this.add.sprite(220, 70, Images.BUTTON_PLAYER)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
@@ -1984,7 +1999,7 @@ export default class GameScene extends Phaser.Scene {
     this.sys.game.device.os.desktop ? this.rivalName = name : this.rivalName = rivalNameText;
     this.rivalRating = rating;
 
-    let inviteTextTween: any;    
+    let inviteTextTween: any;
 
     this.deletePlayersContainer();
     this.deleteControlPanele();
@@ -1992,6 +2007,8 @@ export default class GameScene extends Phaser.Scene {
 
     this.stars.forEach(star => star.destroy());
     this.stars = [];
+    this.starsOutline.forEach(star => star.destroy());
+    this.starsOutline = [];
 
     this.profileContainer = this.add.container(this.cameras.main.centerX - 300, this.cameras.main.centerY - 220);//для отображения на дисплее    
     console.log('this.isExpert: ', this.isExpert);

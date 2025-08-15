@@ -21,6 +21,7 @@ export enum Images {
 	CELL_ZERO_HIGHLIGHTED = 'cellZeroHighlighted',
 	CONFIRM = 'confirmButton',
 	CANCEL = 'cancel',
+  INFO = 'info',
 
 	FRAME = 'frame',
 	MASK = 'mask',
@@ -45,6 +46,7 @@ export enum Images {
 	POPUP = 'popUp',	
 	STAR = 'star',
 	STAR0_5 = 'star0_5',
+	STAR_OUTLINE = 'starOutline',
 	TIMECONTAINER = 'timeContainer',
 	TIMEBAR = 'timeBar',
 	WORLD = 'world',

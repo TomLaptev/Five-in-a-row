@@ -81,6 +81,11 @@
 				"key": "cellZeroHighlighted",
 				"url": "./assets/images/cellZeroHighlighted.png"
 			},
+      {
+				"type": "image",
+				"key": "info",
+				"url": "./assets/images/info.png"
+			},
 			{
 				"type": "image",
 				"key": "invite",
@@ -139,6 +144,11 @@
 				"type": "image",
 				"key": "star",
 				"url": "./assets/images/star.png"
+			},
+			{
+				"type": "image",
+				"key": "starOutline",
+				"url": "./assets/images/starOutline.png"
 			},
 			{
 				"type": "image",
