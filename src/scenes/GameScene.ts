@@ -32,9 +32,11 @@ export default class GameScene extends Phaser.Scene {
   pointer: any;
   sounds: Record<string, Phaser.Sound.BaseSound> = {};
   starsNumber: number;
+  starsSprites: Phaser.GameObjects.Sprite[] = [];
   stars: Phaser.GameObjects.Sprite[] = [];
   starsOutline: Phaser.GameObjects.Sprite[] = [];
   prizeStarNumber: number = 5;
+  winsBeforeBonus: number = 5;
   Timer: any;
   gameResult: number = 0;
   player: any;
@@ -91,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
   isGameFinished: boolean;
   difficultySelection: any;
   numberGames: number = 0;
-  numberVictories: number = 0;
+  numberWins: number = 0;
   socket: Socket | null = null;
   isRoomInvitation: boolean;
   pages: Phaser.GameObjects.Container[] = [];
@@ -174,6 +176,9 @@ export default class GameScene extends Phaser.Scene {
 
     store.isGameStarted = true;
 
+    if (this.winsBeforeBonus == 0) {
+      this.winsBeforeBonus = 5;
+    }
 
   }
 
@@ -203,6 +208,25 @@ export default class GameScene extends Phaser.Scene {
       });
     }
     console.log('this.starsNumber :', this.starsNumber);
+  }
+
+  renderingStars() {
+    // Сначала чистим старые звёзды, если они уже есть
+    this.clearStars();
+  
+    for (let i = 0; i < this.starsNumber && i < 5; i++) {
+      const star = this.add.sprite(
+        this.timeContainer.x - 80 + i * 60,
+        this.timeContainer.y,
+        (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
+      );
+      this.starsSprites.push(star);
+    }
+  }
+  
+  clearStars() {
+    this.starsSprites.forEach(star => star.destroy());
+    this.starsSprites = [];
   }
 
   createPopUp(alpha: number) {
@@ -416,13 +440,7 @@ export default class GameScene extends Phaser.Scene {
 
     //===================== newbieButton +  newbieText ====================================
 
-    for (let i = 0; i < this.starsNumber; i++) {
-      this.add.sprite(
-        this.timeContainer.x - 80 + i * 60,
-        this.timeContainer.y,
-        (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-      )
-    }
+   this.renderingStars();
   }
 
   startGameForTwo() {
@@ -682,13 +700,7 @@ export default class GameScene extends Phaser.Scene {
           this.textForMove.destroy();
 
           if (!store.isForTwo) {
-            for (let i = 0; i < this.starsNumber; i++) {
-              this.add.sprite(
-                this.timeContainer.x - 80 + i * 60,
-                this.timeContainer.y,
-                (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-              )
-            }
+            this.renderingStars();
           }
 
           setTimeout(() => {
@@ -717,19 +729,15 @@ export default class GameScene extends Phaser.Scene {
     const timeLoserText = this.texts[store.lang]?.timeLoserText || this.texts["en"]?.timeLoserText;
     const firstMoveNotMadeText = this.texts[store.lang]?.firstMoveNotMadeText || this.texts["en"]?.firstMoveNotMadeText;
     const anotherGameText = this.texts[store.lang]?.anotherGameText || this.texts["en"]?.anotherGameText;
+    const noAuthInfoText = this.texts[store.lang]?.noAuthInfoText || this.texts["en"]?.noAuthInfoText;
+    const yesAuthInfoText = this.texts[store.lang]?.yesAuthInfoText || this.texts["en"]?.yesAuthInfoText;
+    const bonusReceivedText = this.texts[store.lang]?.bonusReceivedText || this.texts["en"]?.bonusReceivedText;
+    const numberWinsText = this.texts[store.lang]?.numberWinsText || this.texts["en"]?.numberWinsText;
+    const commentsText = this.texts[store.lang]?.commentsText || this.texts["en"]?.commentsText;
+    const laterText = this.texts[store.lang]?.laterText || this.texts["en"]?.laterText;
 
     this.cells.forEach(cell => cell.disableInteractive());
     this.input.setDefaultCursor('default');
-
-    if (!store.isForTwo) {
-      for (let i = 0; i < this.starsNumber; i++) {
-        this.add.sprite(
-          this.timeContainer.x - 80 + i * 60,
-          this.timeContainer.y,
-          (this.starsNumber - i) >= 1 ? Images.STAR : Images.STAR0_5
-        )
-      }
-    }
 
     this.isGameFinished = true;
     this.GA.isFinish = true;
@@ -805,6 +813,21 @@ export default class GameScene extends Phaser.Scene {
         this.createRate();
       }
 
+      if (this.gameResult) {
+        this.winsBeforeBonus--;
+      }     
+
+      this.renderingStars();
+
+      setTimeout(() => {
+        if (this.winsBeforeBonus == 0) {
+          this.starsNumber += 2;
+          localStorage.setItem('stars', ` ${this.starsNumber}`);
+          this.renderingStars();          
+        }
+      }, 1000)
+
+
     }
 
     const finalTextBlock = this.add.text(popUp.x + 300, popUp.y + 135,
@@ -815,10 +838,11 @@ export default class GameScene extends Phaser.Scene {
         align: "center",
       })
     finalTextBlock.setOrigin(0.5, 0.5);
+    let anotherGameTextBlock: any;
 
     if (!(!this.timeReserve && !this.GA.moveStorage.length
       || !this.timeReserve && this.GA.moveStorage.length == 1)) {
-      const anotherGameTextBlock = this.add.text(popUp.x + 300, popUp.y + 250, anotherGameText, {
+      anotherGameTextBlock = this.add.text(popUp.x + 300, popUp.y + 250, anotherGameText, {
         font: "40px BadComic-Regular",
         color: "#ffffff",
         align: "center",
@@ -832,7 +856,7 @@ export default class GameScene extends Phaser.Scene {
 
     const yesText = this.texts[store.lang]?.yesText || this.texts["en"]?.yesText
 
-    new Button(
+    const confirmButton = new Button(
       this,
       popUp.x + 300,
       popUp.y + 360,
@@ -873,14 +897,174 @@ export default class GameScene extends Phaser.Scene {
       }
     );
 
-    // new Button(
-    //   this,
-    //   popUp.x + 545, popUp.y + 60, null, null, null,
-    //   Images.INFO, null, null, null,
-    //   async () => {
+    if (!store.isForTwo) {
 
-    //   }
-    // );
+      const infoButton = new Button(
+        this,
+        popUp.x + 545, popUp.y + 60, null, null, null,
+        Images.INFO, null, null, null,
+        async () => {
+          popUp.setAlpha(0.95);
+          confirmButton.container.setVisible(false);
+          infoButton.container.setVisible(false);
+          finalTextBlock.setVisible(false);
+          if (anotherGameTextBlock) {
+            anotherGameTextBlock.setVisible(false);
+          }
+          //------------------------------------------------------------
+
+          if (!store.isAuth) {
+            const noAuthInfoTextBlock = this.add.text(popUp.x + 300, popUp.y + 140,
+              noAuthInfoText,
+              {
+                font: "36px BadComic-Regular",
+                color: "#ffffff",
+                align: "center",
+              })
+            noAuthInfoTextBlock.setOrigin(0.5, 0.5);
+
+            const yesButton = new Button(
+              this,
+              popUp.x + 200, popUp.y + 360, null, null,
+              '#ffffff',
+              Images.CONFIRM,
+              'BadComic-Regular', 36, yesText,
+              async () => {
+                console.log('ButtonConfirm1 нажата!!!');
+                await (window as any).ysdk.auth.openAuthDialog().then(() => {
+                  if ((window as any).player.isAuthorized()) {
+                    console.log('Авторизован');
+                    this.scene.start("Boot");
+                  } else {
+                    console.log('Не авторизован!!!');
+                    this.actionButtonConfirm();
+                    this.game.sound.mute = false;
+                  }
+
+                })
+
+              }
+            );            
+
+            const noButton = new Button(
+              this,
+              popUp.x + 450, popUp.y + 360, null, null,
+              '#ffffff',
+              Images.CONFIRM,
+              'BadComic-Regular', 36, laterText,
+              async () => {
+                popUp.setAlpha(0.85);
+                confirmButton.container.setVisible(true);
+                infoButton.container.setVisible(true);
+                finalTextBlock.setVisible(true);
+                if (anotherGameTextBlock) {
+                  anotherGameTextBlock.setVisible(true);
+                }
+                finalTextBlock.setVisible(true);
+                if (noAuthInfoTextBlock) {
+                  noAuthInfoTextBlock.setVisible(false);
+                }
+                yesButton.container.setVisible(false);
+                noButton.container.setVisible(false);
+
+              }
+            );
+
+          } else {
+            const yesAuthInfoTextBlock = this.add.text(popUp.x + 300, popUp.y + 90,
+              yesAuthInfoText,
+              {
+                font: "32px BadComic-Regular",
+                color: "#ffffff",
+                align: "center",
+              })
+
+            yesAuthInfoTextBlock.setOrigin(0.5, 0.5);
+            //------------------------------------------------------------
+            let bonusReceivedTextBlock: any;
+            if (this.winsBeforeBonus == 0) {
+              this.winsBeforeBonus = 5;
+
+              bonusReceivedTextBlock = this.add.text(popUp.x + 300, popUp.y + 180, bonusReceivedText, {
+                font: "32px BadComic-Regular",
+                color: "#f5eb00",
+                align: "center",
+              });
+              bonusReceivedTextBlock.setOrigin(0.5, 0.5);
+              setTimeout(() => {
+                this.winsBeforeBonus = 0;
+              }, 1000)
+              
+            }
+            //------------------------------------------------------------
+            const numberWinsTextBlock = this.add.text(popUp.x + 300, popUp.y + 220, (numberWinsText + this.winsBeforeBonus), {
+              font: "32px BadComic-Regular",
+              color: "#ffffff",
+              align: "center",
+            });
+            numberWinsTextBlock.setOrigin(0.5, 0.5);
+
+            //------------------------------------------------------------
+            const commentsTextBlock = this.add.text(popUp.x + 300, popUp.y + 290, commentsText, {
+              font: "32px BadComic-Regular",
+              color: "#ffffff",
+              align: "center",
+            });
+            commentsTextBlock.setOrigin(0.5, 0.5);
+
+
+            const yesButton = new Button(
+              this,
+              popUp.x + 200, popUp.y + 370, null, null,
+              '#ffffff',
+              Images.CONFIRM,
+              'BadComic-Regular', 36, yesText,
+              async () => {
+                console.log('ButtonConfirm1 нажата!!!');
+
+              }
+            );
+
+            const noButton = new Button(
+              this,
+              popUp.x + 450, popUp.y + 370, null, null,
+              '#ffffff',
+              Images.LATER_BUTTON,
+              'BadComic-Regular', 36, laterText,
+              async () => {
+                popUp.setAlpha(0.85);
+                confirmButton.container.setVisible(true);
+                infoButton.container.setVisible(true);
+                finalTextBlock.setVisible(true);
+                if (anotherGameTextBlock) {
+                  anotherGameTextBlock.setVisible(true);
+                }
+                finalTextBlock.setVisible(true);
+                yesAuthInfoTextBlock.setVisible(false);
+                numberWinsTextBlock.setVisible(false);
+                commentsTextBlock.setVisible(false);
+                if (bonusReceivedTextBlock) {
+                  bonusReceivedTextBlock.setVisible(false);
+                }
+
+                yesButton.container.setVisible(false);
+                noButton.container.setVisible(false);
+
+              }
+            );
+
+
+          }
+
+          //------------------------------------------------------------
+
+
+        }
+      );
+
+
+
+    }
 
     this.GA.moveStorage.length = 0;
     this.GA.isFinish = false;
@@ -1275,16 +1459,16 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
-    // console.log(`isGameSession: ${this.isGameSession} `); //false
-    // console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
-    // console.log(`this.isSender: ${this.isSender} `); //false
-    // console.log(`store.isRoom: ${store.isRoom} `); // false
-    // console.log(`this.starsNumber: ${this.starsNumber} `);
-    // console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
-    // console.log('this.profileContainer: ', this.profileContainer);
-    // console.log('this.isExpert: ', this.isExpert);
-    // console.log('this.isNewbie: ', this.isNewbie);
-    // console.log('this.socket: ', this.socket);
+    console.log(`isGameSession: ${this.isGameSession} `); //false
+    console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
+    console.log(`this.isSender: ${this.isSender} `); //false
+    console.log(`store.isRoom: ${store.isRoom} `); // false
+    console.log(`this.starsNumber: ${this.starsNumber} `);
+    console.log('this.isAuthorizationDialog: ', this.isAuthorizationDialog);
+    console.log('this.profileContainer: ', this.profileContainer);
+    console.log('this.isExpert: ', this.isExpert);
+    console.log('this.isNewbie: ', this.isNewbie);
+    console.log('this.socket: ', this.socket);
 
     if (!store.isRoom && !this.isExpert && !this.isNewbie && !this.isGameSession && !this.GA.isFinish
       && !this.isAuthorizationDialog) {
@@ -1332,7 +1516,7 @@ export default class GameScene extends Phaser.Scene {
       this.pagination = new Pagination(this, totalPlayers, this.pagination ? this.pagination.currentPage : 1, (page) => {
         this.updatePlayersContainer(page);
         if (this.pagination) {
-          if (this.pagination.totalPages <= 1 || this.profileContainer !==null) {
+          if (this.pagination.totalPages <= 1 || this.profileContainer !== null) {
             this.pagination.hide();
           } else this.pagination.show();
         }
@@ -1362,7 +1546,7 @@ export default class GameScene extends Phaser.Scene {
         this.starsOutline.push(starOutline);
       }
 
-      for (let i = 0; i < this.starsNumber; i++) {
+      for (let i = 0; i < this.starsNumber && i < 5; i++) {
         const star = this.add.sprite(
           this.cameras.main.centerX - 220 + 100 + i * 60,
           this.cameras.main.centerY - 275 + 25,
@@ -1370,7 +1554,7 @@ export default class GameScene extends Phaser.Scene {
         );
         this.stars.push(star);
       }
- 
+
       this.expertButton = this.add.sprite(220, 70, Images.BUTTON_PLAYER)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", (pointer: Phaser.Input.Pointer) => {

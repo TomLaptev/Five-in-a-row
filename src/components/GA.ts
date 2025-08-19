@@ -89,7 +89,7 @@ export default class GameAlgoritm {
 
       if (!store.isForTwo) {
         localStorage.setItem('stars', ` ${this.scene.starsNumber}`);
-        //console.log('stars:', this.scene.starsNumber);
+        console.log('stars:', this.scene.starsNumber);
       }
 
       //=========================================================================================

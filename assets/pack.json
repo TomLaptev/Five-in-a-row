@@ -81,7 +81,7 @@
 				"key": "cellZeroHighlighted",
 				"url": "./assets/images/cellZeroHighlighted.png"
 			},
-      {
+			{
 				"type": "image",
 				"key": "info",
 				"url": "./assets/images/info.png"
@@ -90,6 +90,11 @@
 				"type": "image",
 				"key": "invite",
 				"url": "./assets/images/invite.png"
+			},
+			{
+				"type": "image",
+				"key": "laterButton",
+				"url": "./assets/images/laterButton.png"
 			},
 			{
 				"type": "image",
@@ -106,13 +111,11 @@
 				"key": "select_Mode",
 				"url": "./assets/images/select_Mode.png"
 			},
-
 			{
 				"type": "image",
 				"key": "expert_z",
 				"url": "./assets/images/expert_z.png"
 			},
-
 			{
 				"type": "image",
 				"key": "expert_g",
@@ -123,13 +126,11 @@
 				"key": "expert",
 				"url": "./assets/images/expert.png"
 			},
-
 			{
 				"type": "image",
 				"key": "amateur",
 				"url": "./assets/images/amateur.png"
 			},
-
 			{
 				"type": "image",
 				"key": "amateur_z",
@@ -250,7 +251,6 @@
 				"key": "mask",
 				"url": "./assets/images/mask.png"
 			},
-
 			{
 				"type": "audio",
 				"key": "theme",

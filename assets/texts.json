@@ -37,7 +37,13 @@
 		"playText": "Играть!",
 		"gamesText": "Игры: ",
 		"victoryTex": "Победы: ",
-		"leaderBoardText": "Таблица лидеров"
+		"leaderBoardText": "Таблица лидеров",
+		"noAuthInfoText": "Авторизация - это:\n Битва за лидерство;\n Бонусные звёзды;\n Комментарии.\n Хотите войти?",
+		"bonusReceivedText": "БОНУС ПОЛУЧЕН!!!",
+		"numberWinsText": "До бонуса, побед: ",
+		"yesAuthInfoText": "Получи\n две бонусные звезды\n за пять побед в одной сессии.",
+		"commentsText": "Оставить отзыв",
+		"laterText": "Позже"
 	},
 	"en": {
 		"playerNameText": "Anonimus",
@@ -77,7 +83,13 @@
 		"playText": "Play!",
 		"gamesText": "Games: ",
 		"victoryTex": "Victories: ",
-		"leaderBoardText": "LiderBoard"
+		"leaderBoardText": "LiderBoard",
+		"noAuthInfoText": "Authorization is:\n Battle for leadership;\n Bonus stars;\n Comments.\n Do you want to log in?",
+		"bonusReceivedText": "BONUS RECEIVED!!!",
+		"numberWinsText": "Before bonus, wins: ",
+		"yesAuthInfoText": "Get\n two bonus stars\n for five wins in one session.",
+		"commentsText": "Leave\n a comment",
+		"laterText": "Later"
 	},
 	"fr": {
 		"playerNameText": "Anonyme",
@@ -117,7 +129,13 @@
 		"playText": "Jouer!",
 		"gamesText": "Jeux : ",
 		"victoryTex": "Victoires : ",
-		"leaderBoardText": "Tableau des leaders"
+		"leaderBoardText": "Tableau des leaders",
+		"noAuthInfoText": "L'autorisation est :\n Bataille pour le leadership ;\n Étoiles bonus ;\n Commentaires.\n Voulez-vous vous connecter ?",
+		"bonusReceivedText": "BONUS REÇU !!!",
+		"numberWinsText": "Avant le bonus, gains: ",
+		"yesAuthInfoText": "Obtenez deux étoiles bonus\n pour cinq victoires\n en une seule session.",
+		"commentsText": "Écrivez\n un commentaire",
+		"laterText": "Après"
 	},
 	"pt": {
 		"playerNameText": "Anônimo",
@@ -157,7 +175,13 @@
 		"playText": "Jogar!",
 		"gamesText": "Jogos: ",
 		"victoryTex": "Vitórias: ",
-		"leaderBoardText": "Tabela de Líderes"
+		"leaderBoardText": "Tabela de Líderes",
+		"noAuthInfoText": "A autorização é:\n Batalha pela liderança;\n Estrelas bônus;\n Comentários.\n Você quer fazer login?",
+		"bonusReceivedText": "BÔNUS RECEBIDO!!!",
+		"numberWinsText": "Antes do bônus, ganhos: ",
+		"yesAuthInfoText": "Ganhe\nduas estrelas bônus\npor cinco vitórias em uma sessão.",
+		"commentsText": "Deixe\n um comentário",
+		"laterText": "Depois"
 	},
 	"tr": {
 		"playerNameText": "Anonim",
@@ -197,7 +221,13 @@
 		"playText": "Oynamak!",
 		"gamesText": "Oyunlar: ",
 		"victoryTex": "Zaferler: ",
-		"leaderBoardText": "Liderlik tablosu"
+		"leaderBoardText": "Liderlik tablosu",
+		"noAuthInfoText": "Yetkilendirme:\n Liderlik savaşı;\n Bonus yıldızlar;\n Yorumlar.\n Giriş yapmak istiyor musunuz?",
+		"bonusReceivedText": "BONUS ALINDI!!!",
+		"numberWinsText": "Bonus öncesi kazançlar: ",
+		"yesAuthInfoText": "Bir oturumda\n beş galibiyet için iki bonus\n yıldız kazan.",
+		"commentsText": "Yorum bırakın",
+		"laterText": "Şimdi değil"
 	},
 	"de": {
 		"playerNameText": "Anonym",
@@ -237,7 +267,13 @@
 		"playText": "Spielen!",
 		"gamesText": "Spiele: ",
 		"victoryTex": "Siege: ",
-		"leaderBoardText": "Die Bestenliste"
+		"leaderBoardText": "Die Bestenliste",
+		"noAuthInfoText": "Autorisierung ist:\n Kampf um die Führung;\n Bonussterne;\n Bewertungen zum Spiel.\n Möchten Sie sich anmelden?",
+		"bonusReceivedText": "BONUS ERHALTEN!!!",
+		"numberWinsText": "Vor Bonus, Gewinne: ",
+		"yesAuthInfoText": "Erhalten Sie\nzwei Bonussterne\nfür fünf Siege in einer Sitzung.",
+		"commentsText": "Schreiben Sie\n einen Kommentar",
+		"laterText": "Später"
 	},
 	"es": {
 		"playerNameText": "Anónimo",
@@ -277,7 +313,13 @@
 		"playText": "¡Jugar!",
 		"gamesText": "Juegos: ",
 		"victoryTex": "Juegos: ",
-		"leaderBoardText": "La tabla de clasificación"
+		"leaderBoardText": "La tabla de clasificación",
+		"noAuthInfoText": "La autorización es:\n Batalla por el liderazgo;\n Estrellas extra;\n Comentarios.\n ¿Quieres iniciar sesión?",
+		"bonusReceivedText": "¡¡¡BONO RECIBIDO!!!",
+		"numberWinsText": "Antes del bono, gana: ",
+		"yesAuthInfoText": "Obtén\n dos estrellas de bonificación\n por cinco victorias en una sesión.",
+		"commentsText": "Deja\n un comentario",
+		"laterText": "Después"
 	},
 	"zh": {
 		"playerNameText": "匿名的",
@@ -317,6 +359,12 @@
 		"playText": "玩！",
 		"gamesText": "遊戲： ",
 		"victoryTex": "勝利： ",
-		"leaderBoardText": " 排行榜"
+		"leaderBoardText": " 排行榜",
+		"noAuthInfoText": "授權為：\n 爭奪領導權；\n 獎勵星星；\n 評論。\n 您是否要登入？",
+		"bonusReceivedText": "已收到獎金！ ！ ！",
+		"numberWinsText": "獎金前贏取： ",
+		"yesAuthInfoText": "在一場比賽中獲\n勝五 次即可獲得\n兩顆獎勵 星。",
+		"commentsText": "發表評論",
+		"laterText": "之後"
 	}
 }
