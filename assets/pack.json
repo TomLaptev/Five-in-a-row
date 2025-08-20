@@ -98,6 +98,11 @@
 			},
 			{
 				"type": "image",
+				"key": "forwardButton",
+				"url": "./assets/images/forwardButton.png"
+			},
+			{
+				"type": "image",
 				"key": "popUp",
 				"url": "./assets/images/popUp.png"
 			},

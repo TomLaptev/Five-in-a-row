@@ -213,7 +213,7 @@ export default class GameScene extends Phaser.Scene {
   renderingStars() {
     // Сначала чистим старые звёзды, если они уже есть
     this.clearStars();
-  
+
     for (let i = 0; i < this.starsNumber && i < 5; i++) {
       const star = this.add.sprite(
         this.timeContainer.x - 80 + i * 60,
@@ -223,7 +223,7 @@ export default class GameScene extends Phaser.Scene {
       this.starsSprites.push(star);
     }
   }
-  
+
   clearStars() {
     this.starsSprites.forEach(star => star.destroy());
     this.starsSprites = [];
@@ -440,7 +440,7 @@ export default class GameScene extends Phaser.Scene {
 
     //===================== newbieButton +  newbieText ====================================
 
-   this.renderingStars();
+    this.renderingStars();
   }
 
   startGameForTwo() {
@@ -734,6 +734,8 @@ export default class GameScene extends Phaser.Scene {
     const bonusReceivedText = this.texts[store.lang]?.bonusReceivedText || this.texts["en"]?.bonusReceivedText;
     const numberWinsText = this.texts[store.lang]?.numberWinsText || this.texts["en"]?.numberWinsText;
     const commentsText = this.texts[store.lang]?.commentsText || this.texts["en"]?.commentsText;
+    const forCommentsText = this.texts[store.lang]?.forCommentsText || this.texts["en"]?.forCommentsText;
+    const forwardText = this.texts[store.lang]?.forwardText || this.texts["en"]?.forwardText;
     const laterText = this.texts[store.lang]?.laterText || this.texts["en"]?.laterText;
 
     this.cells.forEach(cell => cell.disableInteractive());
@@ -815,7 +817,7 @@ export default class GameScene extends Phaser.Scene {
 
       if (this.gameResult) {
         this.winsBeforeBonus--;
-      }     
+      }
 
       this.renderingStars();
 
@@ -823,7 +825,7 @@ export default class GameScene extends Phaser.Scene {
         if (this.winsBeforeBonus == 0) {
           this.starsNumber += 2;
           localStorage.setItem('stars', ` ${this.starsNumber}`);
-          this.renderingStars();          
+          this.renderingStars();
         }
       }, 1000)
 
@@ -944,13 +946,13 @@ export default class GameScene extends Phaser.Scene {
                 })
 
               }
-            );            
+            );
 
-            const noButton = new Button(
+            const laterButton = new Button(
               this,
               popUp.x + 450, popUp.y + 360, null, null,
               '#ffffff',
-              Images.CONFIRM,
+              Images.LATER_BUTTON,
               'BadComic-Regular', 36, laterText,
               async () => {
                 popUp.setAlpha(0.85);
@@ -965,7 +967,7 @@ export default class GameScene extends Phaser.Scene {
                   noAuthInfoTextBlock.setVisible(false);
                 }
                 yesButton.container.setVisible(false);
-                noButton.container.setVisible(false);
+                laterButton.container.setVisible(false);
 
               }
             );
@@ -994,7 +996,7 @@ export default class GameScene extends Phaser.Scene {
               setTimeout(() => {
                 this.winsBeforeBonus = 0;
               }, 1000)
-              
+
             }
             //------------------------------------------------------------
             const numberWinsTextBlock = this.add.text(popUp.x + 300, popUp.y + 220, (numberWinsText + this.winsBeforeBonus), {
@@ -1005,64 +1007,124 @@ export default class GameScene extends Phaser.Scene {
             numberWinsTextBlock.setOrigin(0.5, 0.5);
 
             //------------------------------------------------------------
-            const commentsTextBlock = this.add.text(popUp.x + 300, popUp.y + 290, commentsText, {
-              font: "32px BadComic-Regular",
-              color: "#ffffff",
-              align: "center",
+
+            (window as any).ysdk.feedback.canReview().then(({ value }: { value: boolean }) => {
+              if (value) {
+                // Показываем кнопку "Да"
+                const commentsTextBlock = this.add.text(popUp.x + 300, popUp.y + 290, commentsText, {
+                  font: "32px BadComic-Regular",
+                  color: "#ffffff",
+                  align: "center",
+                });
+                commentsTextBlock.setOrigin(0.5, 0.5);
+
+                const yesButton = new Button(
+                  this,
+                  popUp.x + 200, popUp.y + 370, null, null,
+                  '#ffffff',
+                  Images.CONFIRM,
+                  'BadComic-Regular', 36, yesText,
+                  async () => {
+                    // Кнопка "Да"
+                    //------------Отправка коммента и возврат в игру ----------
+                    (window as any).ysdk.feedback.requestReview()
+                      .then(() => {
+                        console.log("Отзыв отправлен");
+                      })
+                      .catch(() => {
+                        console.log("Игрок передумал оставлять отзыв");
+                      });
+
+                    popUp.setAlpha(0.85);
+                    confirmButton.container.setVisible(true);
+                    infoButton.container.setVisible(true);
+                    finalTextBlock.setVisible(true);
+                    if (anotherGameTextBlock) {
+                      anotherGameTextBlock.setVisible(true);
+                    }
+                    finalTextBlock.setVisible(true);
+                    yesAuthInfoTextBlock.setVisible(false);
+                    numberWinsTextBlock.setVisible(false);
+                    commentsTextBlock.setVisible(false);
+                    if (bonusReceivedTextBlock) {
+                      bonusReceivedTextBlock.setVisible(false);
+                    }
+                    yesButton.container.setVisible(false);
+                    laterButton.container.setVisible(false);
+
+                  }
+                  //------------Отправка коммента  ---- end ------
+                );
+
+                const laterButton = new Button(
+                  this,
+                  popUp.x + 450, popUp.y + 370, null, null,
+                  '#ffffff',
+                  Images.LATER_BUTTON,
+                  'BadComic-Regular', 36, laterText,
+                  async () => {
+                    popUp.setAlpha(0.85);
+                    confirmButton.container.setVisible(true);
+                    infoButton.container.setVisible(true);
+                    finalTextBlock.setVisible(true);
+                    if (anotherGameTextBlock) {
+                      anotherGameTextBlock.setVisible(true);
+                    }
+                    finalTextBlock.setVisible(true);
+                    yesAuthInfoTextBlock.setVisible(false);
+                    numberWinsTextBlock.setVisible(false);
+                    commentsTextBlock.setVisible(false);
+                    if (bonusReceivedTextBlock) {
+                      bonusReceivedTextBlock.setVisible(false);
+                    }
+                    yesButton.container.setVisible(false);
+                    laterButton.container.setVisible(false);
+                  }
+                );
+
+              } else {
+                //----------------Коммент уже оставлен ---- start -----------
+                const forCommentsTextBlock = this.add.text(popUp.x + 300, popUp.y + 290, forCommentsText, {
+                  font: "32px BadComic-Regular",
+                  color: "#ffffff",
+                  align: "center",
+                });
+                forCommentsTextBlock.setOrigin(0.5, 0.5);
+
+                const forwardButton = new Button(
+                  this,
+                  popUp.x + 300, popUp.y + 370, null, null,
+                  '#ffffff',
+                  Images.FORWARD_BUTTON,
+                  'BadComic-Regular', 36, forwardText,
+                  async () => {
+                    popUp.setAlpha(0.85);
+                    confirmButton.container.setVisible(true);
+                    infoButton.container.setVisible(true);
+                    finalTextBlock.setVisible(true);
+                    if (anotherGameTextBlock) {
+                      anotherGameTextBlock.setVisible(true);
+                    }
+                    finalTextBlock.setVisible(true);
+                    yesAuthInfoTextBlock.setVisible(false);
+                    numberWinsTextBlock.setVisible(false);
+                    forCommentsTextBlock.setVisible(false);
+                    if (bonusReceivedTextBlock) {
+                      bonusReceivedTextBlock.setVisible(false);
+                    }
+
+                    forwardButton.container.setVisible(false);
+
+                  }
+                );
+              }
+              //----------------Коммент уже оставлен ---- end -----------
             });
-            commentsTextBlock.setOrigin(0.5, 0.5);
-
-
-            const yesButton = new Button(
-              this,
-              popUp.x + 200, popUp.y + 370, null, null,
-              '#ffffff',
-              Images.CONFIRM,
-              'BadComic-Regular', 36, yesText,
-              async () => {
-                console.log('ButtonConfirm1 нажата!!!');
-
-              }
-            );
-
-            const noButton = new Button(
-              this,
-              popUp.x + 450, popUp.y + 370, null, null,
-              '#ffffff',
-              Images.LATER_BUTTON,
-              'BadComic-Regular', 36, laterText,
-              async () => {
-                popUp.setAlpha(0.85);
-                confirmButton.container.setVisible(true);
-                infoButton.container.setVisible(true);
-                finalTextBlock.setVisible(true);
-                if (anotherGameTextBlock) {
-                  anotherGameTextBlock.setVisible(true);
-                }
-                finalTextBlock.setVisible(true);
-                yesAuthInfoTextBlock.setVisible(false);
-                numberWinsTextBlock.setVisible(false);
-                commentsTextBlock.setVisible(false);
-                if (bonusReceivedTextBlock) {
-                  bonusReceivedTextBlock.setVisible(false);
-                }
-
-                yesButton.container.setVisible(false);
-                noButton.container.setVisible(false);
-
-              }
-            );
-
 
           }
 
-          //------------------------------------------------------------
-
-
         }
       );
-
-
 
     }
 
@@ -1220,7 +1282,6 @@ export default class GameScene extends Phaser.Scene {
         this.isExpert = false;
         this.handleCancal();
       })
-
   }
 
   actionButtonConfirm() {

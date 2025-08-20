@@ -43,7 +43,9 @@
 		"numberWinsText": "До бонуса, побед: ",
 		"yesAuthInfoText": "Получи\n две бонусные звезды\n за пять побед в одной сессии.",
 		"commentsText": "Оставить отзыв",
-		"laterText": "Позже"
+		"laterText": "Позже",
+		"forCommentsText": "Ваш отзыв\n понравился. Спасибо!",
+		"forwardText": "Вперед!"
 	},
 	"en": {
 		"playerNameText": "Anonimus",
@@ -89,7 +91,9 @@
 		"numberWinsText": "Before bonus, wins: ",
 		"yesAuthInfoText": "Get\n two bonus stars\n for five wins in one session.",
 		"commentsText": "Leave\n a comment",
-		"laterText": "Later"
+		"laterText": "Later",
+		"forCommentsText": "I liked your review.\n Thank you!",
+		"forwardText": "Forward!"
 	},
 	"fr": {
 		"playerNameText": "Anonyme",
@@ -135,7 +139,9 @@
 		"numberWinsText": "Avant le bonus, gains: ",
 		"yesAuthInfoText": "Obtenez deux étoiles bonus\n pour cinq victoires\n en une seule session.",
 		"commentsText": "Écrivez\n un commentaire",
-		"laterText": "Après"
+		"laterText": "Après",
+		"forCommentsText": "J'ai aimé\n votre avis. Merci !",
+		"forwardText": "Avant!"
 	},
 	"pt": {
 		"playerNameText": "Anônimo",
@@ -181,7 +187,9 @@
 		"numberWinsText": "Antes do bônus, ganhos: ",
 		"yesAuthInfoText": "Ganhe\nduas estrelas bônus\npor cinco vitórias em uma sessão.",
 		"commentsText": "Deixe\n um comentário",
-		"laterText": "Depois"
+		"laterText": "Depois",
+		"forCommentsText": "Gostei da sua avaliação. Obrigado!",
+		"forwardText": "Avançar!"
 	},
 	"tr": {
 		"playerNameText": "Anonim",
@@ -227,7 +235,9 @@
 		"numberWinsText": "Bonus öncesi kazançlar: ",
 		"yesAuthInfoText": "Bir oturumda\n beş galibiyet için iki bonus\n yıldız kazan.",
 		"commentsText": "Yorum bırakın",
-		"laterText": "Şimdi değil"
+		"laterText": "Şimdi değil",
+		"forCommentsText": "Yorumunuzu beğendim.\n Teşekkür ederim!",
+		"forwardText": "İleri!"
 	},
 	"de": {
 		"playerNameText": "Anonym",
@@ -273,7 +283,9 @@
 		"numberWinsText": "Vor Bonus, Gewinne: ",
 		"yesAuthInfoText": "Erhalten Sie\nzwei Bonussterne\nfür fünf Siege in einer Sitzung.",
 		"commentsText": "Schreiben Sie\n einen Kommentar",
-		"laterText": "Später"
+		"laterText": "Später",
+		"forCommentsText": "Ihre Rezension hat\n mir gefallen. Danke!",
+		"forwardText": "Nach vorne!"
 	},
 	"es": {
 		"playerNameText": "Anónimo",
@@ -319,7 +331,9 @@
 		"numberWinsText": "Antes del bono, gana: ",
 		"yesAuthInfoText": "Obtén\n dos estrellas de bonificación\n por cinco victorias en una sesión.",
 		"commentsText": "Deja\n un comentario",
-		"laterText": "Después"
+		"laterText": "Después",
+		"forCommentsText": "Me gustó\n tu reseña. ¡Gracias!",
+		"forwardText": "¡Adelante!"
 	},
 	"zh": {
 		"playerNameText": "匿名的",
@@ -365,6 +379,8 @@
 		"numberWinsText": "獎金前贏取： ",
 		"yesAuthInfoText": "在一場比賽中獲\n勝五 次即可獲得\n兩顆獎勵 星。",
 		"commentsText": "發表評論",
-		"laterText": "之後"
+		"laterText": "之後",
+		"forCommentsText": "我喜歡你的評\n論。謝謝！",
+		"forwardText": "向前！"
 	}
 }

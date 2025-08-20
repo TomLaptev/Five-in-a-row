@@ -30,7 +30,7 @@ export class StartScene extends Phaser.Scene {
   }
 
   create() {
-    //store.lang = 'zh';
+    //store.lang = 'de';
     this.texts = this.cache.json.get("texts");
 
     this.createBackground();

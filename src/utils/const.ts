@@ -1,19 +1,20 @@
 export enum Images {
 	AVATAR = 'avatar',
-	
+
 	BACKGROUND_V = 'background_v',
 	BACKGROUND_H = 'background_h',
 	BUTTON_SOUND = 'buttonSound',
 	PLAY_BUTTON = 'playButton',
-	BUTTON_WINNERS = 'buttonWinners',		
-	BUTTON_PLAYER = 'buttonPlayer',		
-	BUTTON_BUSY_PLAYER = 'buttonBusyPlayer',		
-	BUTTON_FRAME = 'buttonFrame',		
-	INVITE_BUTTON = 'inviteButton',		
-	LATER_BUTTON = 'laterButton',		
-	BACK_BUTTON = 'backButton',		
-	BACK_BUTTON_LD = 'backButtonLd',		
-	INVITE = 'invite',		
+	BUTTON_WINNERS = 'buttonWinners',
+	BUTTON_PLAYER = 'buttonPlayer',
+	BUTTON_BUSY_PLAYER = 'buttonBusyPlayer',
+	BUTTON_FRAME = 'buttonFrame',
+	INVITE_BUTTON = 'inviteButton',
+	LATER_BUTTON = 'laterButton',
+	FORWARD_BUTTON = 'forwardButton',
+	BACK_BUTTON = 'backButton',
+	BACK_BUTTON_LD = 'backButtonLd',
+	INVITE = 'invite',
 
 	CELL_FREE = 'cellFree',
 	CELL_X = 'cellX',
@@ -22,7 +23,7 @@ export enum Images {
 	CELL_ZERO_HIGHLIGHTED = 'cellZeroHighlighted',
 	CONFIRM = 'confirmButton',
 	CANCEL = 'cancel',
-  INFO = 'info',
+	INFO = 'info',
 
 	FRAME = 'frame',
 	MASK = 'mask',
@@ -42,9 +43,9 @@ export enum Images {
 	LEFT = 'left',
 	RIGHT = 'right',
 	ENTER = 'enter',
-	
+
 	POINTER = 'pointer',
-	POPUP = 'popUp',	
+	POPUP = 'popUp',
 	STAR = 'star',
 	STAR0_5 = 'star0_5',
 	STAR_OUTLINE = 'starOutline',
@@ -60,7 +61,7 @@ export enum Sounds {
 	COMPLETE = 'complete',
 	MOVE = 'move',
 	LOSS = 'loss',
-	FAILURE ='failure',
-  NOTIFICATION = 'notification',
-  TIMER = 'timer',
+	FAILURE = 'failure',
+	NOTIFICATION = 'notification',
+	TIMER = 'timer',
 }
