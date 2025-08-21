@@ -44,8 +44,7 @@
 		"yesAuthInfoText": "Получи\n две бонусные звезды\n за пять побед в одной сессии.",
 		"commentsText": "Оставить отзыв",
 		"laterText": "Позже",
-		"forCommentsText": "Ваш отзыв\n понравился. Спасибо!",
-		"forwardText": "Вперед!"
+		"forCommentsText": "Ваш отзыв\n понравился. Спасибо!"
 	},
 	"en": {
 		"playerNameText": "Anonimus",
@@ -92,8 +91,7 @@
 		"yesAuthInfoText": "Get\n two bonus stars\n for five wins in one session.",
 		"commentsText": "Leave\n a comment",
 		"laterText": "Later",
-		"forCommentsText": "I liked your review.\n Thank you!",
-		"forwardText": "Forward!"
+		"forCommentsText": "I liked your review.\n Thank you!"
 	},
 	"fr": {
 		"playerNameText": "Anonyme",
@@ -140,8 +138,7 @@
 		"yesAuthInfoText": "Obtenez deux étoiles bonus\n pour cinq victoires\n en une seule session.",
 		"commentsText": "Écrivez\n un commentaire",
 		"laterText": "Après",
-		"forCommentsText": "J'ai aimé\n votre avis. Merci !",
-		"forwardText": "Avant!"
+		"forCommentsText": "J'ai aimé\n votre avis. Merci !"
 	},
 	"pt": {
 		"playerNameText": "Anônimo",
@@ -188,8 +185,7 @@
 		"yesAuthInfoText": "Ganhe\nduas estrelas bônus\npor cinco vitórias em uma sessão.",
 		"commentsText": "Deixe\n um comentário",
 		"laterText": "Depois",
-		"forCommentsText": "Gostei da sua avaliação. Obrigado!",
-		"forwardText": "Avançar!"
+		"forCommentsText": "Gostei da sua avaliação. Obrigado!"
 	},
 	"tr": {
 		"playerNameText": "Anonim",
@@ -236,8 +232,7 @@
 		"yesAuthInfoText": "Bir oturumda\n beş galibiyet için iki bonus\n yıldız kazan.",
 		"commentsText": "Yorum bırakın",
 		"laterText": "Şimdi değil",
-		"forCommentsText": "Yorumunuzu beğendim.\n Teşekkür ederim!",
-		"forwardText": "İleri!"
+		"forCommentsText": "Yorumunuzu beğendim.\n Teşekkür ederim!"
 	},
 	"de": {
 		"playerNameText": "Anonym",
@@ -284,8 +279,7 @@
 		"yesAuthInfoText": "Erhalten Sie\nzwei Bonussterne\nfür fünf Siege in einer Sitzung.",
 		"commentsText": "Schreiben Sie\n einen Kommentar",
 		"laterText": "Später",
-		"forCommentsText": "Ihre Rezension hat\n mir gefallen. Danke!",
-		"forwardText": "Nach vorne!"
+		"forCommentsText": "Ihre Rezension hat\n mir gefallen. Danke!"
 	},
 	"es": {
 		"playerNameText": "Anónimo",
@@ -332,8 +326,7 @@
 		"yesAuthInfoText": "Obtén\n dos estrellas de bonificación\n por cinco victorias en una sesión.",
 		"commentsText": "Deja\n un comentario",
 		"laterText": "Después",
-		"forCommentsText": "Me gustó\n tu reseña. ¡Gracias!",
-		"forwardText": "¡Adelante!"
+		"forCommentsText": "Me gustó\n tu reseña. ¡Gracias!"
 	},
 	"zh": {
 		"playerNameText": "匿名的",
@@ -380,7 +373,6 @@
 		"yesAuthInfoText": "在一場比賽中獲\n勝五 次即可獲得\n兩顆獎勵 星。",
 		"commentsText": "發表評論",
 		"laterText": "之後",
-		"forCommentsText": "我喜歡你的評\n論。謝謝！",
-		"forwardText": "向前！"
+		"forCommentsText": "我喜歡你的評\n論。謝謝！"
 	}
 }

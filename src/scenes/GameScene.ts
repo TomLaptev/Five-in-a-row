@@ -735,7 +735,7 @@ export default class GameScene extends Phaser.Scene {
     const numberWinsText = this.texts[store.lang]?.numberWinsText || this.texts["en"]?.numberWinsText;
     const commentsText = this.texts[store.lang]?.commentsText || this.texts["en"]?.commentsText;
     const forCommentsText = this.texts[store.lang]?.forCommentsText || this.texts["en"]?.forCommentsText;
-    const forwardText = this.texts[store.lang]?.forwardText || this.texts["en"]?.forwardText;
+    const playText = this.texts[store.lang]?.playText || this.texts["en"]?.playText;
     const laterText = this.texts[store.lang]?.laterText || this.texts["en"]?.laterText;
 
     this.cells.forEach(cell => cell.disableInteractive());
@@ -1096,7 +1096,7 @@ export default class GameScene extends Phaser.Scene {
                   popUp.x + 300, popUp.y + 370, null, null,
                   '#ffffff',
                   Images.FORWARD_BUTTON,
-                  'BadComic-Regular', 36, forwardText,
+                  'BadComic-Regular', 36, playText,
                   async () => {
                     popUp.setAlpha(0.85);
                     confirmButton.container.setVisible(true);
@@ -1370,6 +1370,10 @@ export default class GameScene extends Phaser.Scene {
 
   //=========== создание контейнера и комнаты игроков	=====================	
   createControlPanele() {
+    // Если открыт профиль — список игроков не показываем
+    if (this.profileContainer) {
+      return;
+    }
     const loginText = this.texts[store.lang]?.loginText || this.texts["en"]?.loginText
     this.deleteControlPanele();
 
@@ -1476,6 +1480,10 @@ export default class GameScene extends Phaser.Scene {
   }
 
   createPlayersContainer() {
+    // Если открыт профиль — список игроков не показываем
+    if (this.profileContainer) {
+      return;
+    }
 
     this.deletePlayersContainer();
 
@@ -1574,14 +1582,46 @@ export default class GameScene extends Phaser.Scene {
       // Обновляем пагинацию
       const totalPlayers = this.sortedPlayersArray.length;
 
-      this.pagination = new Pagination(this, totalPlayers, this.pagination ? this.pagination.currentPage : 1, (page) => {
-        this.updatePlayersContainer(page);
-        if (this.pagination) {
-          if (this.pagination.totalPages <= 1 || this.profileContainer !== null) {
-            this.pagination.hide();
-          } else this.pagination.show();
+      if (!this.pagination) {
+        // Создаём один раз при первом вызове
+        this.pagination = new Pagination(
+          this,
+          totalPlayers,
+          1,
+          (page) => {
+            // Обновляем только список игроков
+            if (!this.profileContainer) {
+              this.updatePlayersContainer(page);
+            }
+
+            // Управляем видимостью пагинации
+            if (this.pagination) {
+              if (this.pagination.totalPages <= 1 || this.profileContainer) {
+                this.pagination.hide();
+              } else {
+                this.pagination.show();
+              }
+            }
+          }
+        );
+      } else {
+        // Только обновляем данные
+        this.pagination.updateTotalPlayers(totalPlayers);
+
+        // Сохраняем текущую страницу (если она существует)
+        const currentPage = Math.min(this.pagination.currentPage, this.pagination.totalPages);
+
+        if (!this.profileContainer) {
+          this.updatePlayersContainer(currentPage);
         }
-      });
+
+        if (this.pagination.totalPages <= 1 || this.profileContainer) {
+          this.pagination.hide();
+        } else {
+          this.pagination.show();
+        }
+      }
+
       this.pagination.updateTotalPlayers(totalPlayers);
       console.log("Обновленный список игроков:", playersList);
     }
@@ -1634,8 +1674,6 @@ export default class GameScene extends Phaser.Scene {
               rating: this.playerRating,
             });
             this.socket.emit("requestPlayers");
-            this.deleteControlPanele();
-            this.deletePlayersContainer();
 
           } else if (this.starsNumber <= 0) {
             this.deleteControlPanele();
@@ -1653,9 +1691,6 @@ export default class GameScene extends Phaser.Scene {
         font: "24px BadComic-Regular",
         color: "#ffff55",
       });
-
-      this.playersContainer.add([this.expertButton, this.expertName, this.expertRating]);
-
 
       this.newbieButton = this.add.sprite(220, 115, Images.BUTTON_PLAYER)
         .setInteractive({ useHandCursor: true })
@@ -1675,8 +1710,6 @@ export default class GameScene extends Phaser.Scene {
               rating: this.playerRating,
             });
             this.socket.emit("requestPlayers");
-            this.deleteControlPanele();
-            this.deletePlayersContainer();
 
           } else if (this.starsNumber <= 0) {
             this.deleteControlPanele();
@@ -1695,9 +1728,8 @@ export default class GameScene extends Phaser.Scene {
         color: "#ffff55",
       });
 
-      this.playersContainer.add([this.newbieButton, this.newbieName, this.newbieRating]);
+      this.playersContainer.add([this.expertButton, this.expertName, this.expertRating ,this.newbieButton, this.newbieName, this.newbieRating]);
     }
-
 
     visiblePlayers.forEach((el: PlayerData) => {
       if (!this.isSender && !this.profileContainer) {
@@ -1723,9 +1755,8 @@ export default class GameScene extends Phaser.Scene {
                   available: false,
                   rating: this.playerRating,
                 });
+
                 this.socket.emit("requestPlayers");
-                this.deleteControlPanele();
-                this.deletePlayersContainer();
 
               } else if (this.starsNumber <= 0) {
                 this.deleteControlPanele();
@@ -1749,8 +1780,6 @@ export default class GameScene extends Phaser.Scene {
 
         }
       } else if (this.isSender && this.profileContainer) {
-        this.deleteControlPanele();
-        this.deletePlayersContainer();
         if (el.id === this.candidate && !el.available) {
           this.clearProfileContainer();
           console.log("Кандидата увели!");
@@ -2236,6 +2265,11 @@ export default class GameScene extends Phaser.Scene {
 
   //============================= Создание профиля игрока ====================================
   async сreateProfile(id: string, lang: string, name: string, rating: any, avatarUrl: string, games: any, wins: any) {
+
+    this.deletePlayersContainer();
+    this.deleteControlPanele();
+    this.clearProfileContainer();
+
     const rivalNameText = this.texts[store.lang]?.rivalNameText || this.texts["en"]?.rivalNameText;
     this.opponentId = id;
     this.pagination.hide();
@@ -2245,10 +2279,6 @@ export default class GameScene extends Phaser.Scene {
     this.rivalRating = rating;
 
     let inviteTextTween: any;
-
-    this.deletePlayersContainer();
-    this.deleteControlPanele();
-    this.clearProfileContainer();
 
     this.stars.forEach(star => star.destroy());
     this.stars = [];
@@ -2512,7 +2542,6 @@ export default class GameScene extends Phaser.Scene {
       this.avatarMask.destroy();
       this.opponentAvatar = null;
       this.avatarMask = null;
-
     }
 
     if (this.profileContainer) {
