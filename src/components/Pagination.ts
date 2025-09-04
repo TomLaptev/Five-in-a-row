@@ -109,7 +109,7 @@ export default class Pagination {
 
    if (totalPlayers <=8) {
     this.totalPages = 1
-   } else this.totalPages = 1 + Math.ceil(totalPlayers - 8 / 10);
+   } else this.totalPages = 1 + Math.ceil((totalPlayers - 8) / 10);
 
     this.currentPage = Math.min(this.currentPage, this.totalPages); // ✅ Проверяем, можно ли остаться на той же странице
 

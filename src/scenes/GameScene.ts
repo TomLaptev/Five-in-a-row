@@ -1597,14 +1597,9 @@ export default class GameScene extends Phaser.Scene {
 
             // Управляем видимостью пагинации
             if (this.pagination) {
-              console.log('log: ', 100)
               if (this.pagination.totalPages <= 1 || this.profileContainer) {
-                console.log('log: ', 101)
-                console.log('this.pagination.totalPages: ', this.pagination.totalPages)
-                console.log('this.profileContainers: ', this.profileContainer)
                 this.pagination.hide();
               } else {
-                console.log('log: ', 102)
                 this.pagination.show();
               }
             }
