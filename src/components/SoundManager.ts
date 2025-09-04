@@ -29,7 +29,9 @@ export default class SoundManager {
 		  this.soundTrack?.pause();
 		} else {
 			console.log('Страница снова видима');
-		  this.soundTrack?.resume();
+		    if (localStorage.getItem('isSoundEnable') === 'true') {        
+        this.soundTrack?.resume();
+      }
 		}
 	  });
 	}

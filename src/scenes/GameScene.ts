@@ -1549,7 +1549,8 @@ export default class GameScene extends Phaser.Scene {
         this.clearProfileContainer(); // Очищаем профиль 
       }
 
-      this.sortedPlayersArray = playersList.sort((a, b) => b.rating - a.rating);
+      let incomingPlayersArray = playersList.filter((p: PlayerData) => p.id !== this.socket.id)
+      this.sortedPlayersArray = incomingPlayersArray.sort((a, b) => b.rating - a.rating);
 
       //========== Проверка кандидата на онлайн ====================================
       if (this.isSender) {
@@ -1596,9 +1597,14 @@ export default class GameScene extends Phaser.Scene {
 
             // Управляем видимостью пагинации
             if (this.pagination) {
+              console.log('log: ', 100)
               if (this.pagination.totalPages <= 1 || this.profileContainer) {
+                console.log('log: ', 101)
+                console.log('this.pagination.totalPages: ', this.pagination.totalPages)
+                console.log('this.profileContainers: ', this.profileContainer)
                 this.pagination.hide();
               } else {
+                console.log('log: ', 102)
                 this.pagination.show();
               }
             }
@@ -1623,6 +1629,7 @@ export default class GameScene extends Phaser.Scene {
       }
 
       this.pagination.updateTotalPlayers(totalPlayers);
+
       console.log("Обновленный список игроков:", playersList);
     }
 
@@ -1630,12 +1637,19 @@ export default class GameScene extends Phaser.Scene {
 
   updatePlayersContainer(page: number): void {
     this.createPlayersContainer();
-    let textY = page === 1 ? 110 : 20;
 
-    const playersPerPage = page === 1 ? 8 : 10;
-    const start = (page - 1) * playersPerPage;
-    const end = start + playersPerPage;
+    let textY = page === 1 ? 110 : 20;
+    let playersPerPage = page === 1 ? 8 : 10;
+    let start: number = 0;
+    let end: number = 8;
+
+    if (page > 1) {      
+      start = (page - 2) * playersPerPage + 8;
+      end = start + playersPerPage;
+    }
+    
     const visiblePlayers = this.sortedPlayersArray.slice(start, end);
+
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
     const newbieText = this.texts[store.lang]?.newbieText || this.texts["en"]?.newbieText;
 
@@ -1728,55 +1742,55 @@ export default class GameScene extends Phaser.Scene {
         color: "#ffff55",
       });
 
-      this.playersContainer.add([this.expertButton, this.expertName, this.expertRating ,this.newbieButton, this.newbieName, this.newbieRating]);
+      this.playersContainer.add([this.expertButton, this.expertName, this.expertRating, this.newbieButton, this.newbieName, this.newbieRating]);
     }
 
     visiblePlayers.forEach((el: PlayerData) => {
       if (!this.isSender && !this.profileContainer) {
         if (el.id !== this.socket.id) {
-          const playerButton = this.add.sprite(220, textY + 50, el.available ? Images.BUTTON_PLAYER : Images.BUTTON_BUSY_PLAYER)
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: el.available })
-            .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
-              if (pointer.rightButtonDown()) {
-                return; // Игнорируем правую кнопку, ничего не делаем
-              }
-              if (el.available && this.starsNumber > 0) {
-                console.log('this.starsNumber: ', this.starsNumber);
-                console.log(`Выбран кандидат: ${el.name}`);
-                this.isSender = true;
-                this.сreateProfile(el.id, el.lang, el.name, el.rating, el.avatar, el.games, el.wins);
-                this.candidate = el.id;
+        const playerButton = this.add.sprite(220, textY + 50, el.available ? Images.BUTTON_PLAYER : Images.BUTTON_BUSY_PLAYER)
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: el.available })
+          .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
+            if (pointer.rightButtonDown()) {
+              return; // Игнорируем правую кнопку, ничего не делаем
+            }
+            if (el.available && this.starsNumber > 0) {
+              console.log('this.starsNumber: ', this.starsNumber);
+              console.log(`Выбран кандидат: ${el.name}`);
+              this.isSender = true;
+              this.сreateProfile(el.id, el.lang, el.name, el.rating, el.avatar, el.games, el.wins);
+              this.candidate = el.id;
 
-                // Обновляем состояние пользователя (available: false)
-                this.socket.emit("updatePlayersStatus", {
-                  id: this.socket.id,
-                  opponentSocketId: this.socket.id,
-                  available: false,
-                  rating: this.playerRating,
-                });
+              // Обновляем состояние пользователя (available: false)
+              this.socket.emit("updatePlayersStatus", {
+                id: this.socket.id,
+                opponentSocketId: this.socket.id,
+                available: false,
+                rating: this.playerRating,
+              });
 
-                this.socket.emit("requestPlayers");
+              this.socket.emit("requestPlayers");
 
-              } else if (this.starsNumber <= 0) {
-                this.deleteControlPanele();
-                this.deletePlayersContainer();
-                this.getStars();
-              }
-            });
-
-          const playerName = this.add.text(55, textY + 35, `${el.name}: `, {
-            font: "24px BadComic-Regular",
-            color: "#ffff55",
+            } else if (this.starsNumber <= 0) {
+              this.deleteControlPanele();
+              this.deletePlayersContainer();
+              this.getStars();
+            }
           });
 
-          const playerRating = this.add.text(320, textY + 35, `${el.rating}`, {
-            font: "24px BadComic-Regular",
-            color: "#ffff55",
-          });
+        const playerName = this.add.text(55, textY + 35, `${el.name}: `, {
+          font: "24px BadComic-Regular",
+          color: "#ffff55",
+        });
 
-          textY += 45;
-          this.playersContainer.add([playerButton, playerName, playerRating]);
+        const playerRating = this.add.text(320, textY + 35, `${el.rating}`, {
+          font: "24px BadComic-Regular",
+          color: "#ffff55",
+        });
+
+        textY += 45;
+        this.playersContainer.add([playerButton, playerName, playerRating]);
 
         }
       } else if (this.isSender && this.profileContainer) {

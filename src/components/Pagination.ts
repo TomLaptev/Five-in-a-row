@@ -13,7 +13,13 @@ export default class Pagination {
 
   constructor(scene: Phaser.Scene, totalPlayers: number, currentPage: number, onPageChange: (page: number) => void) {
     this.scene = scene;
-    this.totalPages = Math.ceil(totalPlayers / 10);
+   // this.totalPages = Math.ceil(totalPlayers / 10);
+    if (totalPlayers <= 8) {
+      this.totalPages = 1
+    } else  {
+       this.totalPages = 1 + Math.ceil((totalPlayers - 8) / 10)
+    }
+    console.log('totalPlayers: ', totalPlayers)
     this.currentPage = Math.min(currentPage, this.totalPages); // Сохраняем текущую страницу
     this.onPageChange = onPageChange;
     this.parentContainer = this.createContainer();
@@ -101,7 +107,9 @@ export default class Pagination {
   public updateTotalPlayers(totalPlayers: number) {
    // console.log(`Обновление числа игроков. Текущая страница: ${this.currentPage}, Всего страниц: ${this.totalPages}`);
 
-    this.totalPages = Math.ceil(totalPlayers / 10);
+   if (totalPlayers <=8) {
+    this.totalPages = 1
+   } else this.totalPages = 1 + Math.ceil(totalPlayers - 8 / 10);
 
     this.currentPage = Math.min(this.currentPage, this.totalPages); // ✅ Проверяем, можно ли остаться на той же странице
 
