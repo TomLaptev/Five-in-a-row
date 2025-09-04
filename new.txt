@@ -1,0 +1,67 @@
+Выбран кандидат: Анатолий
+GameScene.ts:2298 this.isExpert:  false
+GameScene.ts:2299 this.isNewbie:  false
+GameScene.ts:2457 Test!!!
+GameScene.ts:1531 isGameSession: false 
+GameScene.ts:1532 GA.isFinish: false 
+GameScene.ts:1533 this.isSender: true 
+GameScene.ts:1534 store.isRoom: false 
+GameScene.ts:1535 this.starsNumber: 0.5 
+GameScene.ts:1536 this.isAuthorizationDialog:  false
+GameScene.ts:1537 this.profileContainer:  Container {_events: Events, _eventsCount: 2, scene: GameScene, displayList: DisplayList, type: 'Container', …}
+GameScene.ts:1538 this.isExpert:  false
+GameScene.ts:1539 this.isNewbie:  false
+GameScene.ts:1540 this.socket:  Socket {connected: true, recovered: undefined, receiveBuffer: Array(0), sendBuffer: Array(0), _queue: Array(0), …}
+GameScene.ts:1628 Обновленный список игроков: (5) [{…}, {…}, {…}, {…}, {…}]
+GameScene.ts:2469 {roomId: null}
+GameScene.ts:2470 backButton нажата!!!
+GameScene.ts:2471 store.isRoom:  false
+GameScene.ts:142 store.gameData: {games: 1578, wins: 789, score: 1690}
+GameScene.ts:210 this.starsNumber : 0.5
+GameScene.ts:458 store.isRoom:  false
+GameScene.ts:459 this.socket:  Socket {connected: true, recovered: undefined, receiveBuffer: Array(0), sendBuffer: Array(0), _queue: Array(0), …}
+GameScene.ts:1531 isGameSession: false 
+GameScene.ts:1532 GA.isFinish: false 
+GameScene.ts:1533 this.isSender: false 
+GameScene.ts:1534 store.isRoom: false 
+GameScene.ts:1535 this.starsNumber: 0.5 
+GameScene.ts:1536 this.isAuthorizationDialog:  false
+GameScene.ts:1537 this.profileContainer:  null
+GameScene.ts:1538 this.isExpert:  false
+GameScene.ts:1539 this.isNewbie:  false
+GameScene.ts:1540 this.socket:  Socket {connected: true, recovered: undefined, receiveBuffer: Array(0), sendBuffer: Array(0), _queue: Array(0), …}
+GameScene.ts:1628 Обновленный список игроков: (5) [{…}, {…}, {…}, {…}, {…}]
+GameScene.ts:1754 this.starsNumber:  0.5
+GameScene.ts:1755 Выбран кандидат: Anonim
+GameScene.ts:2298 this.isExpert:  false
+GameScene.ts:2299 this.isNewbie:  false
+GameScene.ts:2457 Test!!!
+GameScene.ts:1531 isGameSession: false 
+GameScene.ts:1532 GA.isFinish: false 
+GameScene.ts:1533 this.isSender: true 
+GameScene.ts:1534 store.isRoom: false 
+GameScene.ts:1535 this.starsNumber: 0.5 
+GameScene.ts:1536 this.isAuthorizationDialog:  false
+GameScene.ts:1537 this.profileContainer:  Container {_events: Events, _eventsCount: 2, scene: GameScene, displayList: DisplayList, type: 'Container', …}
+GameScene.ts:1538 this.isExpert:  false
+GameScene.ts:1539 this.isNewbie:  false
+GameScene.ts:1540 this.socket:  Socket {connected: true, recovered: undefined, receiveBuffer: Array(0), sendBuffer: Array(0), _queue: Array(0), …}
+GameScene.ts:1628 Обновленный список игроков: (5) [{…}, {…}, {…}, {…}, {…}]
+GameScene.ts:2469 {roomId: null}
+GameScene.ts:2470 backButton нажата!!!
+GameScene.ts:2471 store.isRoom:  false
+GameScene.ts:1531 isGameSession: false 
+GameScene.ts:1532 GA.isFinish: false 
+GameScene.ts:1533 this.isSender: false 
+GameScene.ts:1534 store.isRoom: false 
+GameScene.ts:1535 this.starsNumber: 0.5 
+GameScene.ts:1536 this.isAuthorizationDialog:  false
+GameScene.ts:1537 this.profileContainer:  null
+GameScene.ts:1538 this.isExpert:  false
+GameScene.ts:1539 this.isNewbie:  false
+GameScene.ts:1540 this.socket:  Socket {connected: true, recovered: undefined, receiveBuffer: Array(0), sendBuffer: Array(0), _queue: Array(0), …}
+GameScene.ts:1628 Обновленный список игроков: (5) [{…}, {…}, {…}, {…}, {…}]
+GameScene.ts:142 store.gameData: {games: 1578, wins: 789, score: 1690}
+GameScene.ts:210 this.starsNumber : 0.5
+GameScene.ts:458 store.isRoom:  false
+GameScene.ts:459 this.socket:  Socket {connected: true, recovered: undefined, receiveBuffer: Array(0), sendBuffer: Array(0), _queue: Array(0), …}

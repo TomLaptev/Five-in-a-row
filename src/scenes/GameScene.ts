@@ -117,6 +117,7 @@ export default class GameScene extends Phaser.Scene {
   readyToLoseTextBlock: any | null = null;
   soundButton: Button;
   isButtonExitPressed: boolean = false;
+  isRestarting: boolean = false;
 
   constructor() {
     super("Game");
@@ -135,7 +136,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-
+    this.playersContainer = this.add.container();
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     store.gameData = await (window as any).player.getData();
@@ -1528,6 +1529,11 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
+    /*  if (!this.playersContainer && this.socket) {
+       console.warn("Сцена не готова, updatePlayers пропущен");
+       return;
+     } */
+
     console.log(`isGameSession: ${this.isGameSession} `); //false
     console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
     console.log(`this.isSender: ${this.isSender} `); //false
@@ -1582,48 +1588,49 @@ export default class GameScene extends Phaser.Scene {
 
       // Обновляем пагинацию
       const totalPlayers = this.sortedPlayersArray.length;
+      if (totalPlayers > 8) {
+        if (!this.pagination) {
+          // Создаём один раз при первом вызове
+          this.pagination = new Pagination(
+            this,
+            totalPlayers,
+            1,
+            (page) => {
+              // Обновляем только список игроков
+              if (!this.profileContainer) {
+                this.updatePlayersContainer(page);
+              }
 
-      if (!this.pagination) {
-        // Создаём один раз при первом вызове
-        this.pagination = new Pagination(
-          this,
-          totalPlayers,
-          1,
-          (page) => {
-            // Обновляем только список игроков
-            if (!this.profileContainer) {
-              this.updatePlayersContainer(page);
-            }
-
-            // Управляем видимостью пагинации
-            if (this.pagination) {
-              if (this.pagination.totalPages <= 1 || this.profileContainer) {
-                this.pagination.hide();
-              } else {
-                this.pagination.show();
+              // Управляем видимостью пагинации
+              if (this.pagination) {
+                if (this.pagination.totalPages <= 1 || this.profileContainer) {
+                  this.pagination.hide();
+                } else {
+                  this.pagination.show();
+                }
               }
             }
-          }
-        );
-      } else {
-        // Только обновляем данные
-        this.pagination.updateTotalPlayers(totalPlayers);
-
-        // Сохраняем текущую страницу (если она существует)
-        const currentPage = Math.min(this.pagination.currentPage, this.pagination.totalPages);
-
-        if (!this.profileContainer) {
-          this.updatePlayersContainer(currentPage);
-        }
-
-        if (this.pagination.totalPages <= 1 || this.profileContainer) {
-          this.pagination.hide();
+          );
         } else {
-          this.pagination.show();
-        }
-      }
+          // Только обновляем данные
+          this.pagination.updateTotalPlayers(totalPlayers);
 
-      this.pagination.updateTotalPlayers(totalPlayers);
+          // Сохраняем текущую страницу (если она существует)
+          const currentPage = Math.min(this.pagination.currentPage, this.pagination.totalPages);
+
+          if (!this.profileContainer) {
+            this.updatePlayersContainer(currentPage);
+          }
+
+          if (this.pagination.totalPages <= 1 || this.profileContainer) {
+            this.pagination.hide();
+          } else {
+            this.pagination.show();
+          }
+        }
+
+        this.pagination.updateTotalPlayers(totalPlayers);
+      } else this.updatePlayersContainer(1);
 
       console.log("Обновленный список игроков:", playersList);
     }
@@ -1638,11 +1645,11 @@ export default class GameScene extends Phaser.Scene {
     let start: number = 0;
     let end: number = 8;
 
-    if (page > 1) {      
+    if (page > 1) {
       start = (page - 2) * playersPerPage + 8;
       end = start + playersPerPage;
     }
-    
+
     const visiblePlayers = this.sortedPlayersArray.slice(start, end);
 
     const expertText = this.texts[store.lang]?.expertText || this.texts["en"]?.expertText;
@@ -1743,49 +1750,49 @@ export default class GameScene extends Phaser.Scene {
     visiblePlayers.forEach((el: PlayerData) => {
       if (!this.isSender && !this.profileContainer) {
         if (el.id !== this.socket.id) {
-        const playerButton = this.add.sprite(220, textY + 50, el.available ? Images.BUTTON_PLAYER : Images.BUTTON_BUSY_PLAYER)
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: el.available })
-          .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
-            if (pointer.rightButtonDown()) {
-              return; // Игнорируем правую кнопку, ничего не делаем
-            }
-            if (el.available && this.starsNumber > 0) {
-              console.log('this.starsNumber: ', this.starsNumber);
-              console.log(`Выбран кандидат: ${el.name}`);
-              this.isSender = true;
-              this.сreateProfile(el.id, el.lang, el.name, el.rating, el.avatar, el.games, el.wins);
-              this.candidate = el.id;
+          const playerButton = this.add.sprite(220, textY + 50, el.available ? Images.BUTTON_PLAYER : Images.BUTTON_BUSY_PLAYER)
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: el.available })
+            .on("pointerdown", async (pointer: Phaser.Input.Pointer) => {
+              if (pointer.rightButtonDown()) {
+                return; // Игнорируем правую кнопку, ничего не делаем
+              }
+              if (el.available && this.starsNumber > 0) {
+                console.log('this.starsNumber: ', this.starsNumber);
+                console.log(`Выбран кандидат: ${el.name}`);
+                this.isSender = true;
+                this.сreateProfile(el.id, el.lang, el.name, el.rating, el.avatar, el.games, el.wins);
+                this.candidate = el.id;
 
-              // Обновляем состояние пользователя (available: false)
-              this.socket.emit("updatePlayersStatus", {
-                id: this.socket.id,
-                opponentSocketId: this.socket.id,
-                available: false,
-                rating: this.playerRating,
-              });
+                // Обновляем состояние пользователя (available: false)
+                this.socket.emit("updatePlayersStatus", {
+                  id: this.socket.id,
+                  opponentSocketId: this.socket.id,
+                  available: false,
+                  rating: this.playerRating,
+                });
 
-              this.socket.emit("requestPlayers");
+                this.socket.emit("requestPlayers");
 
-            } else if (this.starsNumber <= 0) {
-              this.deleteControlPanele();
-              this.deletePlayersContainer();
-              this.getStars();
-            }
+              } else if (this.starsNumber <= 0) {
+                this.deleteControlPanele();
+                this.deletePlayersContainer();
+                this.getStars();
+              }
+            });
+
+          const playerName = this.add.text(55, textY + 35, `${el.name}: `, {
+            font: "24px BadComic-Regular",
+            color: "#ffff55",
           });
 
-        const playerName = this.add.text(55, textY + 35, `${el.name}: `, {
-          font: "24px BadComic-Regular",
-          color: "#ffff55",
-        });
+          const playerRating = this.add.text(320, textY + 35, `${el.rating}`, {
+            font: "24px BadComic-Regular",
+            color: "#ffff55",
+          });
 
-        const playerRating = this.add.text(320, textY + 35, `${el.rating}`, {
-          font: "24px BadComic-Regular",
-          color: "#ffff55",
-        });
-
-        textY += 45;
-        this.playersContainer.add([playerButton, playerName, playerRating]);
+          textY += 45;
+          this.playersContainer.add([playerButton, playerName, playerRating]);
 
         }
       } else if (this.isSender && this.profileContainer) {
@@ -1804,6 +1811,7 @@ export default class GameScene extends Phaser.Scene {
         }
       }
     });
+    console.log('this.playersContainer: ', this.playersContainer);
   }
 
   //--------------  Обработчик обновлений комнаты	---------------------------------------	
@@ -2281,7 +2289,9 @@ export default class GameScene extends Phaser.Scene {
 
     const rivalNameText = this.texts[store.lang]?.rivalNameText || this.texts["en"]?.rivalNameText;
     this.opponentId = id;
-    this.pagination.hide();
+    if (this.pagination) {
+      this.pagination.hide();
+    }
     let isInviteButtonPressed: boolean = false;
 
     this.sys.game.device.os.desktop ? this.rivalName = name : this.rivalName = rivalNameText;
@@ -2472,7 +2482,8 @@ export default class GameScene extends Phaser.Scene {
         if (store.isRoom) {
           this.socket.emit("refusalPlay", { opponentId: this.opponentId, roomId: this.privateRoomId });
         } else {
-          this.scene.start("Game")
+          console.log('restart')
+          this.scene.restart();
         }
 
         // Уведомляем сервер, что игроки снова доступны
