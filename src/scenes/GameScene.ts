@@ -181,6 +181,14 @@ export default class GameScene extends Phaser.Scene {
       this.winsBeforeBonus = 5;
     }
 
+      // создаём пустую пагинацию один раз
+  this.pagination = new Pagination(
+    this,
+    0,   // пока игроков нет
+    1,   // первая страница
+    () => {}
+  );
+
   }
 
   async setPlayerRating() {
@@ -1529,11 +1537,6 @@ export default class GameScene extends Phaser.Scene {
   //--------- Обрабатываем обновленный список игроков ------------------------
 
   handleUpdatePlayers(playersList: PlayerData[]): void {
-    /*  if (!this.playersContainer && this.socket) {
-       console.warn("Сцена не готова, updatePlayers пропущен");
-       return;
-     } */
-
     console.log(`isGameSession: ${this.isGameSession} `); //false
     console.log(`GA.isFinish: ${this.GA.isFinish} `); //false
     console.log(`this.isSender: ${this.isSender} `); //false
@@ -1558,6 +1561,14 @@ export default class GameScene extends Phaser.Scene {
       let incomingPlayersArray = playersList.filter((p: PlayerData) => p.id !== this.socket.id)
       this.sortedPlayersArray = incomingPlayersArray.sort((a, b) => b.rating - a.rating);
 
+      // for (let i = this.sortedPlayersArray.length; i < 30; i++) {
+      //   this.sortedPlayersArray.push({
+      //     id: `test-${i}`,
+      //     rating: Math.floor(Math.random() * 2000),
+      //     name: `FakePlayer${i}`
+      //   });
+      // }
+
       //========== Проверка кандидата на онлайн ====================================
       if (this.isSender) {
         const candidateStillOnline = playersList.some(player => player.id === this.candidate);
@@ -1581,37 +1592,10 @@ export default class GameScene extends Phaser.Scene {
         this.createPlayersContainer();
         this.createControlPanele();
       }
-      // Удаляем старый контейнер пагинации перед созданием нового
-      if (this.pagination && this.pagination.parentContainer) {
-        this.pagination.parentContainer.destroy(true);
-      }
-
       // Обновляем пагинацию
       const totalPlayers = this.sortedPlayersArray.length;
       if (totalPlayers > 8) {
-        if (!this.pagination) {
-          // Создаём один раз при первом вызове
-          this.pagination = new Pagination(
-            this,
-            totalPlayers,
-            1,
-            (page) => {
-              // Обновляем только список игроков
-              if (!this.profileContainer) {
-                this.updatePlayersContainer(page);
-              }
-
-              // Управляем видимостью пагинации
-              if (this.pagination) {
-                if (this.pagination.totalPages <= 1 || this.profileContainer) {
-                  this.pagination.hide();
-                } else {
-                  this.pagination.show();
-                }
-              }
-            }
-          );
-        } else {
+       
           // Только обновляем данные
           this.pagination.updateTotalPlayers(totalPlayers);
 
@@ -1627,7 +1611,7 @@ export default class GameScene extends Phaser.Scene {
           } else {
             this.pagination.show();
           }
-        }
+       
 
         this.pagination.updateTotalPlayers(totalPlayers);
       } else this.updatePlayersContainer(1);
@@ -1816,8 +1800,12 @@ export default class GameScene extends Phaser.Scene {
 
   //--------------  Обработчик обновлений комнаты	---------------------------------------	
   handleRoomUpdate(roomData: any): void { //on("roomUpdate")
-    // console.log(`this.starsNumber: ${this.starsNumber} `);
-    this.pagination.show();
+    if (this.pagination.totalPages > 1) {
+      this.pagination.show();
+    } else {
+      this.pagination.hide();
+    }
+    
     if (roomData) {
       store.isRoom = true;
       this.roomData = true;
