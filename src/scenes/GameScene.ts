@@ -188,6 +188,8 @@ export default class GameScene extends Phaser.Scene {
     1,   // первая страница
     () => {}
   );
+    // скрываем её до первой инициализации
+    this.pagination.hide();
 
   }
 
