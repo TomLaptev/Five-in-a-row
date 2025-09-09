@@ -136,7 +136,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    this.playersContainer = this.add.container();
+    //this.playersContainer = this.add.container();
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     store.gameData = await (window as any).player.getData();
@@ -173,7 +173,9 @@ export default class GameScene extends Phaser.Scene {
       this.opponentId = null;
       this.startGameForTwo()
     }
-    else if (store.isGameOnline) this.startGameOnline();
+    else if (store.isGameOnline) {
+      this.playersContainer = this.add.container();
+      this.startGameOnline();}
 
     store.isGameStarted = true;
 
@@ -1557,6 +1559,14 @@ export default class GameScene extends Phaser.Scene {
 
       let incomingPlayersArray = playersList.filter((p: PlayerData) => p.id !== this.socket.id)
       this.sortedPlayersArray = incomingPlayersArray.sort((a, b) => b.rating - a.rating);
+
+      //  for (let i = this.sortedPlayersArray.length; i < 30; i++) {
+      //   this.sortedPlayersArray.push({
+      //     id: `test-${i}`,
+      //     rating: Math.floor(Math.random() * 2000),
+      //     name: `FakePlayer${i}`
+      //   });
+      // }
 
       //========== Проверка кандидата на онлайн ====================================
       if (this.isSender) {
