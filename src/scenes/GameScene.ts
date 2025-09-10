@@ -136,7 +136,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    //this.playersContainer = this.add.container();
     (window as any).ysdk?.features?.GameplayAPI?.stop?.();
 
     store.gameData = await (window as any).player.getData();
@@ -1826,8 +1825,10 @@ export default class GameScene extends Phaser.Scene {
 
   //--------------  Обработчик обновлений комнаты	---------------------------------------	
   handleRoomUpdate(roomData: any): void { //on("roomUpdate")
-    // console.log(`this.starsNumber: ${this.starsNumber} `);
-    this.pagination.show();
+    if (this.pagination) {
+      this.pagination.show();
+    }
+    
     if (roomData) {
       store.isRoom = true;
       this.roomData = true;
