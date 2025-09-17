@@ -60,12 +60,10 @@ export default class Board {
     }
   }
   private handleCellClick(cell: any): void {
-    if (cell.value !== -1) {
+    if (cell.value !== -1 || this.scene.isGameFinished) {
       console.log('cell.value: ', cell.value)
       return;
     }
-
-    if (!this.scene.exitFromGamePopUp)
 
       if (this.scene.opponentId) {
         this.scene.onCellClickedOnline(cell);

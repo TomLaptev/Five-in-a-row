@@ -174,7 +174,53 @@ export default class GameScene extends Phaser.Scene {
     }
     else if (store.isGameOnline) {
       this.playersContainer = this.add.container();
-      this.startGameOnline();}
+      /* let attempts = 0;
+       const checkReady = () => {
+         attempts++;
+ 
+         const isSceneReady = this.playersContainer?.scene?.scene?.key === "Game";
+         const isDataReady =
+           store.gameData &&
+           typeof store.gameData.games === "number" &&
+           typeof store.gameData.wins === "number";
+ 
+          if (isSceneReady && isDataReady || true) {
+           console.log("✅ Scene и store готовы → стартуем онлайн"); */
+      this.startGameOnline();
+
+      if (this.socket && this.socket.connected) {
+        // Уведомляем сервер, что игроки снова доступны
+        if (this.starsNumber > 0) {
+          this.socket.emit("updatePlayersStatus", {
+            id: this.socket.id,
+            opponentSocketId: this.opponentId,
+            available: true,
+            rating: this.playerRating
+          });
+        } else {
+          this.socket.emit("updatePlayersStatus", {
+            id: this.opponentId,
+            opponentSocketId: this.opponentId,
+            available: true,
+            rating: this.playerRating
+          });
+        }
+
+        this.socket.emit("requestPlayers");
+      }
+
+      /*           console.log("attempts: ", attempts);
+              } else if (attempts < 10) {
+                console.log("⏳ Жду готовности...", { isSceneReady, isDataReady });
+                this.time.delayedCall(0, checkReady); // увеличим задержку
+              } else {
+                console.warn("⚠️ Не удалось дождаться готовности → рестарт сцены");
+                this.scene.restart();
+              }
+            };
+      
+            this.time.delayedCall(50, checkReady); */
+    }
 
     store.isGameStarted = true;
 
@@ -1828,7 +1874,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.pagination) {
       this.pagination.show();
     }
-    
+
     if (roomData) {
       store.isRoom = true;
       this.roomData = true;
@@ -2170,7 +2216,7 @@ export default class GameScene extends Phaser.Scene {
         }
       }
     } else if (!store.isForTwo && this.GA.moveStorage.length > 1
-      && this.GA.moveStorage.length < 100
+      && this.GA.moveStorage.length < 80
       && this.exitFromGamePopUp == null
       && (store.isYouX && this.GA.moveStorage.length % 2 == 0
         || !store.isYouX && this.GA.moveStorage.length % 2 != 0)) {
@@ -2497,29 +2543,9 @@ export default class GameScene extends Phaser.Scene {
           this.scene.restart();
         }
 
-        // Уведомляем сервер, что игроки снова доступны
-        if (this.starsNumber > 0) {
-          this.socket.emit("updatePlayersStatus", {
-            id: this.socket.id,
-            opponentSocketId: this.opponentId,
-            available: true,
-            rating: this.playerRating
-          });
-        } else {
-          this.socket.emit("updatePlayersStatus", {
-            id: this.opponentId,
-            opponentSocketId: this.opponentId,
-            available: true,
-            rating: this.playerRating
-          });
-        }
-
         this.isSender = false;
         store.isRoom = false;
         this.userRoomId = null;
-
-        this.socket.emit("requestPlayers");
-
       });
     // Кнопка взврата к списку игроков / отклонения приглашения ----------------end----------
 
