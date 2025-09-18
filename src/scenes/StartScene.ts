@@ -6,7 +6,9 @@ import store from '../store';
 export class StartScene extends Phaser.Scene {
   topTitle: Button;
   soundButton: Button;
-  playButton: Button;
+  playButton: any;
+  playTextBlock: any;
+  playTextTween: any;
   winnersButton: Button;
   vsComputerButton: Button;
   forTwoButton: Button;
@@ -183,14 +185,16 @@ export class StartScene extends Phaser.Scene {
 
     this.winnersButton = new Button(
       this,
-      this.cameras.main.centerX - 10,
+      this.cameras.main.centerX + 190,
       this.cameras.main.centerY + 250,
       null, null, null,
       Images.BUTTON_WINNERS,
       null, null, null,
       async () => {
         this.winnersButton.container.destroy();
-        this.playButton.container.destroy();
+        this.playButton.destroy();
+        this.playTextBlock.destroy();
+
         if (store.isAuth) {
           try {
             await (window as any).ysdk.leaderboards.getEntries('mainLeaderboard', { quantityTop: 5, includeUser: true, quantityAround: 1 })
@@ -227,27 +231,53 @@ export class StartScene extends Phaser.Scene {
   }
 
   createPlayButton() {
-    this.playButton = new Button(
-      this,
-      this.cameras.main.centerX + 200,
-      this.cameras.main.centerY + 250,
-      null, null, null,
-      Images.PLAY_BUTTON,
-      null, null, null,
-      () => {
+    const playText = this.texts[store.lang]?.playText || this.texts["en"]?.playText;
+
+    this.playButton = this.add.sprite(this.cameras.main.centerX - 118, this.cameras.main.centerY + 213, Images.PLAY_BUTTON)
+      .setOrigin(0, 0)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        if (pointer.rightButtonDown()) {
+          return; // Игнорируем правую кнопку, ничего не делаем
+        }
         this.createBackButton();
         this.createPlayButtonActions();
-      }
+        this.playButton.destroy();
+        this.playTextBlock.destroy();
 
-    );
+         // Останавливаем пульсирующую анимацию текста
+          if (this.playTextTween) {
+            this.playTextTween.stop();
+            this.playTextTween.remove(); // Удаляем из TweenManager
+          }
+      })
+
+          this.playTextBlock = this.add.text(this.playButton.x + 113, this.playButton.y + 30, playText, {
+        font: "36px BadComic-Regular",
+        color: "#f5ebdf",
+        align: "center"
+      });
+      this.playTextBlock.setOrigin(0.5, 0.5);
+
+      this.playTextTween = this.tweens.add({
+      targets: this.playTextBlock,
+      scaleX: 1.1, // Увеличение на 5%
+      scaleY: 1.1,
+      alpha: 1, // Увеличение яркости (если alpha < 1)
+      duration: 750, // Половина секунды для увеличения
+      yoyo: true, // Вернуть в исходное состояние
+      repeat: -1, // Зациклить анимацию
+      ease: "Sine.easeInOut" // Плавность анимации
+    });
+    
   }
-
   createPlayButtonActions() {
     const vsCompText = this.texts[store.lang]?.vsCompText || this.texts["en"]?.vsCompText;
     const forTwoText = this.texts[store.lang]?.forTwoText || this.texts["en"]?.forTwoText;
     const onlineText = this.texts[store.lang]?.onlineText || this.texts["en"]?.onlineText;
     this.winnersButton.container.destroy();
-    this.playButton.container.destroy();
+    this.playButton.destroy();
+    this.playTextBlock.destroy();
 
     this.world.destroy();
     this.createPopUp(0.4);

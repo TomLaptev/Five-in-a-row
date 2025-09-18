@@ -117,6 +117,7 @@ export default class GameScene extends Phaser.Scene {
   readyToLoseTextBlock: any | null = null;
   soundButton: Button;
   isButtonExitPressed: boolean = false;
+  isBackButtonPressed: boolean = false;
   isRestarting: boolean = false;
 
   constructor() {
@@ -174,21 +175,11 @@ export default class GameScene extends Phaser.Scene {
     }
     else if (store.isGameOnline) {
       this.playersContainer = this.add.container();
-      /* let attempts = 0;
-       const checkReady = () => {
-         attempts++;
- 
-         const isSceneReady = this.playersContainer?.scene?.scene?.key === "Game";
-         const isDataReady =
-           store.gameData &&
-           typeof store.gameData.games === "number" &&
-           typeof store.gameData.wins === "number";
- 
-          if (isSceneReady && isDataReady || true) {
-           console.log("✅ Scene и store готовы → стартуем онлайн"); */
+
       this.startGameOnline();
 
-      if (this.socket && this.socket.connected) {
+      if (this.socket && /* this.socket.connected */ this.isBackButtonPressed) {
+        this.isBackButtonPressed = false;
         // Уведомляем сервер, что игроки снова доступны
         if (this.starsNumber > 0) {
           this.socket.emit("updatePlayersStatus", {
@@ -209,17 +200,6 @@ export default class GameScene extends Phaser.Scene {
         this.socket.emit("requestPlayers");
       }
 
-      /*           console.log("attempts: ", attempts);
-              } else if (attempts < 10) {
-                console.log("⏳ Жду готовности...", { isSceneReady, isDataReady });
-                this.time.delayedCall(0, checkReady); // увеличим задержку
-              } else {
-                console.warn("⚠️ Не удалось дождаться готовности → рестарт сцены");
-                this.scene.restart();
-              }
-            };
-      
-            this.time.delayedCall(50, checkReady); */
     }
 
     store.isGameStarted = true;
@@ -231,12 +211,10 @@ export default class GameScene extends Phaser.Scene {
   }
 
   async setPlayerRating() {
-    //console.log('store.gameData.score:', store.gameData.score)
     this.playerRating = store.gameData.score === undefined
       || store.gameData.score === null
       || store.gameData.score < 1000 ? 1100 : store.gameData.score;
 
-    //console.log('this.playerRating :', this.playerRating);
   }
 
   setStars() {
@@ -2491,8 +2469,6 @@ export default class GameScene extends Phaser.Scene {
     });
     inviteTextBlock.setOrigin(0.5, 0.5);
 
-    if (!this.isSender && this.opponentId) { }
-
     inviteTextTween = this.tweens.add({
       targets: inviteTextBlock,
       scaleX: 1.1, // Увеличение на 5%
@@ -2530,22 +2506,25 @@ export default class GameScene extends Phaser.Scene {
         if (pointer.rightButtonDown()) {
           return; // Игнорируем правую кнопку, ничего не делаем
         }
+        this.isBackButtonPressed = true;
         this.isExpert = false;
         this.isNewbie = false;
         this.clearProfileContainer();
         console.log({ roomId: this.privateRoomId });
         console.log('backButton нажата!!!')
-        console.log('store.isRoom: ', store.isRoom)
-        if (store.isRoom) {
-          this.socket.emit("refusalPlay", { opponentId: this.opponentId, roomId: this.privateRoomId });
-        } else {
-          console.log('restart')
-          this.scene.restart();
-        }
+        console.log('store.isRoom: ', store.isRoom);
 
+        if (store.isRoom) {
+          store.isRoom = false;
+          this.socket.emit("refusalPlay", { opponentId: this.opponentId, roomId: this.privateRoomId });
+        }
+        
         this.isSender = false;
-        store.isRoom = false;
         this.userRoomId = null;
+
+        console.log('restart')
+        this.scene.restart();
+
       });
     // Кнопка взврата к списку игроков / отклонения приглашения ----------------end----------
 
